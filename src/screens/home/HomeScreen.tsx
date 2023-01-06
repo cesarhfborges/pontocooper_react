@@ -6,10 +6,10 @@ import {
   Layout,
   Text,
   TopNavigation,
-  TopNavigationAction,
 } from '@ui-kitten/components';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {addHours, format, set} from 'date-fns';
+import {TopBar} from '../../components/TopBar';
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -38,9 +38,9 @@ const renderEnterIcon = (props: any) => (
 
 const ButtonsFooter = (props: any) => (
   <View {...props} style={styles.flex}>
-    {/*<Button size="small" status="basic">*/}
-    {/*  CANCEL*/}
-    {/*</Button>*/}
+    <Text style={{textAlign: 'center', marginBottom: 8}} category="h2">
+      00:00:00
+    </Text>
     <Button accessoryLeft={renderEnterIcon} status="success" size="large">
       Entrada
     </Button>
@@ -52,7 +52,7 @@ interface Data {
   hora: Date;
 }
 
-const data: Data[] = new Array(23)
+const data: Data[] = new Array(4)
   .fill({
     hora: set(new Date(), {hours: 1, minutes: 0, seconds: 0}),
     tipo: 'entrada',
@@ -62,24 +62,11 @@ const data: Data[] = new Array(23)
     tipo: i % 2 === 0 ? 'entrada' : 'saida',
   }));
 
-const BackIcon = (props: any) => <Icon {...props} name="arrow-back" />;
-
-const renderBackAction = () => <TopNavigationAction icon={BackIcon} />;
-
-const renderButtonsAction = () => <TopNavigationAction icon={BackIcon} />;
-
 class HomeScreen extends React.Component<any, any> {
   render() {
     return (
       <Layout style={styles.topContainer} level="2">
-        <TopNavigation
-          alignment="center"
-          title="Eva Application"
-          subtitle="Subtitle"
-          style={styles.topNav}
-          accessoryLeft={renderBackAction}
-          // accessoryRight={renderRightActions}
-        />
+        <TopBar homeScreen={true} />
         <ScrollView>
           <View style={styles.view}>
             <Card
@@ -122,41 +109,63 @@ class HomeScreen extends React.Component<any, any> {
               <Text style={{marginVertical: 8}} category="h6">
                 Entradas/Saídas:
               </Text>
-              {data.map((item: any, i: number, items) => (
+              {data.length > 0 ? (
+                data.map((item: any, i: number, items) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.flexRow,
+                      {
+                        borderStyle: 'solid',
+                        borderColor: '#dde1eb',
+                        borderBottomWidth: i + 1 >= items.length ? 0 : 1,
+                        paddingHorizontal: 0,
+                        paddingVertical: 4,
+                      },
+                    ]}>
+                    <Icon
+                      style={[styles.icon, {width: 24, height: 24}]}
+                      fill={item.tipo === 'entrada' ? 'green' : 'red'}
+                      name={
+                        item.tipo === 'entrada'
+                          ? 'log-in-outline'
+                          : 'log-out-outline'
+                      }
+                    />
+                    <Text style={{marginLeft: 8, fontSize: 16}} category="s1">
+                      {format(item.hora, 'HH:mm:ss')}
+                    </Text>
+                  </View>
+                ))
+              ) : (
                 <View
-                  key={i}
                   style={[
                     styles.flexRow,
                     {
                       borderStyle: 'solid',
                       borderColor: '#dde1eb',
-                      borderBottomWidth: i + 1 >= items.length ? 0 : 1,
+                      borderBottomWidth: 0,
                       paddingHorizontal: 0,
                       paddingVertical: 4,
                     },
                   ]}>
                   <Icon
                     style={[styles.icon, {width: 24, height: 24}]}
-                    fill={item.tipo === 'entrada' ? 'green' : 'red'}
-                    name={
-                      item.tipo === 'entrada'
-                        ? 'log-in-outline'
-                        : 'log-out-outline'
-                    }
+                    fill="orange"
+                    name="info-outline"
                   />
-                  <Text style={{marginLeft: 8, fontSize: 16}} category="s1">
-                    {format(item.hora, 'HH:mm:ss')}
+                  <Text
+                    style={{marginLeft: 8, fontSize: 16}}
+                    status="warning"
+                    category="s1">
+                    Nenhum ponto registado hoje.
                   </Text>
                 </View>
-              ))}
+              )}
             </Card>
           </View>
         </ScrollView>
-        <TopNavigation
-          title={ButtonsFooter}
-          style={styles.topNav}
-          // accessoryRight={renderRightActions}
-        />
+        <TopNavigation title={ButtonsFooter} style={styles.bottomBar} />
       </Layout>
     );
   }
@@ -168,24 +177,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'stretch',
-    // flexDirection: 'row',
-    // justifyContent: 'center',
-    // backgroundColor: 'blue',
-    // paddingHorizontal: 8,
-    // alignItems: 'center',
-    // justifyContent: 'space-between',
-  },
-  topNav: {
-    // flex: 1,
-    // flexDirection: 'column',
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.55,
-    shadowRadius: 5.46,
-    elevation: 9,
   },
   view: {
     flex: 1,
@@ -194,7 +185,6 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     paddingHorizontal: 8,
     paddingTop: 16,
-    // backgroundColor: 'red',
   },
   card: {
     flex: 1,
@@ -205,46 +195,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: 'green',
-    // flex: 1,
-    // flexDirection: 'row',
-    // flexWrap: 'wrap',
   },
   cardHeaderItems: {
-    // flex: 1,
-    // flexBasis: 'auto',
-    // flexGrow: 0,
-    // flexShrink: 1,
     justifyContent: 'center',
     flex: 1,
-    // width: 100,
     height: 32,
-    // alignItems: 'stretch',
-    // backgroundColor: 'red',
   },
   cardHeaderItemText: {},
   flexRow: {
     flex: 1,
     flexDirection: 'row',
-    // backgroundColor: 'blue',
   },
   flex: {
     flex: 1,
-    // backgroundColor: 'green',
-    // marginLeft: 1,
   },
   icon: {
     flex: 1,
     width: 32,
     height: 32,
   },
-  // footerContainer: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'flex-end',
-  // },
-  // footerControl: {
-  //   marginLeft: 2,
-  // },
+  bottomBar: {
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.55,
+    shadowRadius: 5.46,
+    elevation: 9,
+  },
 });
 
 export {HomeScreen};
