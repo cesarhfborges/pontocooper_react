@@ -78,7 +78,6 @@ class HomeScreen extends Component {
             <View style={styles.container}>
               <Card
                 header={CardHeader}
-                // footer={CardFooter}
                 style={styles.card}>
                 <Text style={styles.title} category="h6">
                   Banco de horas:
@@ -214,7 +213,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    // backgroundColor: 'red',
   },
   layout: {
     flex: 1,
@@ -222,7 +220,6 @@ const styles = StyleSheet.create({
   },
   scroll: {
     flex: 1,
-    // backgroundColor: 'green',
   },
   bottomBar: {
     flex: 1,
@@ -240,7 +237,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
-    // alignContent: 'space-between',
     alignItems: 'stretch',
     alignSelf: 'stretch',
     padding: 0,
