@@ -8,7 +8,23 @@
             "status": {
               "success": {
                 "backgroundColor": "#42d77d",
-                "borderColor": "#34ae87"
+                "borderColor": "#34ae87",
+                "state": {
+                  "active": {
+                    "backgroundColor": "#34ae87",
+                    "borderColor": "#42d77d"
+                  }
+                }
+              },
+              "danger": {
+                "backgroundColor": "#f44335",
+                "borderColor": "#f55649",
+                "state": {
+                  "active": {
+                    "borderColor": "#f44335",
+                    "backgroundColor": "#f55649"
+                  }
+                }
               }
             }
           }
@@ -29,6 +45,132 @@
             "backgroundColor": "#1da57a",
             "titleColor": "#FFFFFF",
             "subtitleColor": "#FFFFFF"
+          }
+        }
+      }
+    },
+    "Card": {
+      "meta": {},
+      "appearances": {
+        "outline": {
+          "mapping": {
+            "state": {
+              "active": {
+                "backgroundColor": "background-basic-color-1"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Text": {
+      "meta": {},
+      "appearances": {
+        "default": {
+          "mapping": {
+            "color": "text-basic-color"
+          },
+          "variantGroups": {
+            "category": {
+              "h1": {
+                "fontSize": "text-heading-1-font-size",
+                "fontWeight": "text-heading-1-font-weight",
+                "fontFamily": "text-heading-1-font-family"
+              },
+              "h2": {
+                "fontSize": "text-heading-2-font-size",
+                "fontWeight": "text-heading-2-font-weight",
+                "fontFamily": "text-heading-2-font-family"
+              },
+              "h3": {
+                "fontSize": "text-heading-3-font-size",
+                "fontWeight": "text-heading-3-font-weight",
+                "fontFamily": "text-heading-3-font-family"
+              },
+              "h4": {
+                "fontSize": "text-heading-4-font-size",
+                "fontWeight": "text-heading-4-font-weight",
+                "fontFamily": "text-heading-4-font-family"
+              },
+              "h5": {
+                "fontSize": "text-heading-5-font-size",
+                "fontWeight": "text-heading-5-font-weight",
+                "fontFamily": "text-heading-5-font-family"
+              },
+              "h6": {
+                "fontSize": "text-heading-6-font-size",
+                "fontWeight": "text-heading-6-font-weight",
+                "fontFamily": "text-heading-6-font-family"
+              },
+              "s1": {
+                "fontSize": "text-subtitle-1-font-size",
+                "fontWeight": "text-subtitle-1-font-weight",
+                "fontFamily": "text-subtitle-1-font-family"
+              },
+              "s2": {
+                "fontSize": "text-subtitle-2-font-size",
+                "fontWeight": "text-subtitle-2-font-weight",
+                "fontFamily": "text-subtitle-2-font-family"
+              },
+              "p1": {
+                "fontSize": "text-paragraph-1-font-size",
+                "fontWeight": "text-paragraph-1-font-weight",
+                "fontFamily": "text-paragraph-1-font-family"
+              },
+              "p2": {
+                "fontSize": "text-paragraph-2-font-size",
+                "fontWeight": "text-paragraph-2-font-weight",
+                "fontFamily": "text-paragraph-2-font-family"
+              },
+              "c1": {
+                "fontSize": "text-caption-1-font-size",
+                "fontWeight": "text-caption-1-font-weight",
+                "fontFamily": "text-caption-1-font-family"
+              },
+              "c2": {
+                "fontSize": "text-caption-2-font-size",
+                "fontWeight": "text-caption-2-font-weight",
+                "fontFamily": "text-caption-2-font-family"
+              },
+              "label": {
+                "fontSize": "text-label-font-size",
+                "fontWeight": "text-label-font-weight",
+                "fontFamily": "text-label-font-family"
+              }
+            },
+            "status": {
+              "basic": {
+                "color": "text-basic-color"
+              },
+              "primary": {
+                "color": "text-primary-color"
+              },
+              "success": {
+                "color": "#42d77d"
+              },
+              "info": {
+                "color": "text-info-color"
+              },
+              "warning": {
+                "color": "text-warning-color"
+              },
+              "danger": {
+                "color": "text-danger-color"
+              },
+              "control": {
+                "color": "text-control-color"
+              }
+            }
+          }
+        },
+        "alternative": {
+          "mapping": {
+            "color": "text-alternate-color"
+          }
+        },
+        "hint": {
+          "mapping": {
+            "color": "text-hint-color"
           }
         }
       }
