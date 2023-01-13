@@ -33,14 +33,14 @@ const TopBarHome = () => {
 
 const styles = StyleSheet.create({
   topNav: {
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.55,
-    shadowRadius: 5.46,
-    elevation: 9,
+    // shadowColor: '#000000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 4,
+    // },
+    // shadowOpacity: 0.55,
+    // shadowRadius: 5.46,
+    // elevation: 9,
     flex: 1,
     maxHeight: 56,
     // backgroundColor: '#0c6329',

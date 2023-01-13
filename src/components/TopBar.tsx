@@ -1,12 +1,23 @@
 import React from 'react';
 import {Icon, TopNavigation, TopNavigationAction} from '@ui-kitten/components';
 import {StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
-const BackIcon = (props: any) => <Icon {...props} name="arrow-back-outline" />;
-const ProfileIcon = (props: any) => <Icon {...props} name="person-outline" />;
-const TopBar = (props: any) => {
-  const renderBackAction = () => <TopNavigationAction icon={BackIcon} />;
-  const renderProfileAction = () => <TopNavigationAction icon={ProfileIcon} />;
+const MenuIcon = (props: any) => <Icon {...props} name="arrow-back-outline" />;
+const TopBar = () => {
+  const navigation = useNavigation();
+
+  const goToHome = () => {
+    // @ts-ignore
+    navigation.navigate('Home');
+  };
+  const renderMenuAction = () => (
+    <TopNavigationAction
+      style={styles.menuIcon}
+      onPress={goToHome}
+      icon={MenuIcon}
+    />
+  );
 
   return (
     <TopNavigation
@@ -14,8 +25,7 @@ const TopBar = (props: any) => {
       title="Coopersystem"
       subtitle="Ponto Eletrônico"
       style={styles.topNav}
-      accessoryLeft={renderBackAction}
-      accessoryRight={renderProfileAction}
+      accessoryLeft={renderMenuAction}
     />
   );
 };
@@ -30,6 +40,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.55,
     shadowRadius: 5.46,
     elevation: 9,
+    flex: 1,
+    maxHeight: 56,
+    // backgroundColor: '#0c6329',
+  },
+  menuIcon: {
+    // height: 20,
+    // backgroundColor: 'blue',
+    // flex: 1,
   },
 });
 

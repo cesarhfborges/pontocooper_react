@@ -34,7 +34,7 @@ interface Data {
   hora: Date;
 }
 
-const data: Data[] = new Array(100)
+const data: Data[] = new Array(4)
   .fill({
     hora: set(new Date(), {hours: 1, minutes: 0, seconds: 0}),
     tipo: 'entrada',
@@ -73,128 +73,130 @@ class HomeScreen extends Component {
     return (
       <SafeAreaView style={styles.safeView}>
         <TopBarHome />
-        <ScrollView style={styles.scroll}>
-          <Layout level="3" style={styles.container}>
-            <Card
-              header={CardHeader}
-              // footer={CardFooter}
-              style={styles.card}>
-              <Text style={styles.title} category="h6">
-                Banco de horas:
-              </Text>
-              <View style={styles.flexRow}>
-                <View style={styles.flex}>
-                  <Text style={styles.label} category="label">
-                    Aprovadas:
-                  </Text>
-                  <Text style={styles.text} category="s1">
-                    +35:54h
-                  </Text>
+        <Layout level="3" style={styles.layout}>
+          <ScrollView style={styles.scroll}>
+            <View style={styles.container}>
+              <Card
+                header={CardHeader}
+                // footer={CardFooter}
+                style={styles.card}>
+                <Text style={styles.title} category="h6">
+                  Banco de horas:
+                </Text>
+                <View style={styles.flexRow}>
+                  <View style={styles.flex}>
+                    <Text style={styles.label} category="label">
+                      Aprovadas:
+                    </Text>
+                    <Text style={styles.text} category="s1">
+                      +35:54h
+                    </Text>
+                  </View>
+                  <View style={styles.flex}>
+                    <Text style={styles.label} category="label">
+                      Em Analise:
+                    </Text>
+                    <Text style={styles.text} category="s1">
+                      +35:54h
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.flex}>
-                  <Text style={styles.label} category="label">
-                    Em Analise:
-                  </Text>
-                  <Text style={styles.text} category="s1">
-                    +35:54h
-                  </Text>
+                <View style={styles.flexRow}>
+                  <View style={styles.flex}>
+                    <Text style={styles.label} category="label">
+                      Jornada:
+                    </Text>
+                    <Text style={styles.text} category="s1">
+                      8h
+                    </Text>
+                  </View>
+                  <View style={styles.flex}>
+                    <Text style={styles.label} category="label">
+                      Carga horária:
+                    </Text>
+                    <Text style={styles.text} category="s1">
+                      176h
+                    </Text>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.flexRow}>
-                <View style={styles.flex}>
-                  <Text style={styles.label} category="label">
-                    Jornada:
-                  </Text>
-                  <Text style={styles.text} category="s1">
-                    8h
-                  </Text>
+                <View style={styles.flexRow}>
+                  <View style={styles.flex}>
+                    <Text style={styles.label} category="label">
+                      Dias úteis:
+                    </Text>
+                    <Text style={styles.text} category="s1">
+                      22
+                    </Text>
+                  </View>
+                  <View style={styles.flex}>
+                    <Text style={styles.label} category="label">
+                      Restante:
+                    </Text>
+                    <Text style={styles.text} category="s1">
+                      151h
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.flex}>
-                  <Text style={styles.label} category="label">
-                    Carga horária:
-                  </Text>
-                  <Text style={styles.text} category="s1">
-                    176h
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.flexRow}>
-                <View style={styles.flex}>
-                  <Text style={styles.label} category="label">
-                    Dias úteis:
-                  </Text>
-                  <Text style={styles.text} category="s1">
-                    22
-                  </Text>
-                </View>
-                <View style={styles.flex}>
-                  <Text style={styles.label} category="label">
-                    Restante:
-                  </Text>
-                  <Text style={styles.text} category="s1">
-                    151h
-                  </Text>
-                </View>
-              </View>
-              <Text style={styles.title} category="h6">
-                Entradas/Saídas:
-              </Text>
-              {data.length > 0 ? (
-                data.map((item: any, i: number, items) => (
+                <Text style={styles.title} category="h6">
+                  Entradas/Saídas:
+                </Text>
+                {data.length > 0 ? (
+                  data.map((item: any, i: number, items) => (
+                    <View
+                      key={i}
+                      style={[
+                        styles.flexRow,
+                        {
+                          borderStyle: 'solid',
+                          borderColor: '#dde1eb',
+                          borderBottomWidth: i + 1 >= items.length ? 0 : 1,
+                          paddingHorizontal: 0,
+                          paddingVertical: 4,
+                        },
+                      ]}>
+                      <Icon
+                        style={[styles.icon, {width: 34, height: 34}]}
+                        fill={item.tipo === 'entrada' ? 'green' : 'red'}
+                        name={
+                          item.tipo === 'entrada'
+                            ? 'log-in-outline'
+                            : 'log-out-outline'
+                        }
+                      />
+                      <Text style={{marginLeft: 8, fontSize: 22}} category="s1">
+                        {format(item.hora, 'HH:mm:ss')}
+                      </Text>
+                    </View>
+                  ))
+                ) : (
                   <View
-                    key={i}
                     style={[
                       styles.flexRow,
                       {
                         borderStyle: 'solid',
                         borderColor: '#dde1eb',
-                        borderBottomWidth: i + 1 >= items.length ? 0 : 1,
+                        borderBottomWidth: 0,
                         paddingHorizontal: 0,
                         paddingVertical: 4,
                       },
                     ]}>
                     <Icon
-                      style={[styles.icon, {width: 34, height: 34}]}
-                      fill={item.tipo === 'entrada' ? 'green' : 'red'}
-                      name={
-                        item.tipo === 'entrada'
-                          ? 'log-in-outline'
-                          : 'log-out-outline'
-                      }
+                      style={[styles.icon, {width: 24, height: 24}]}
+                      fill="orange"
+                      name="info-outline"
                     />
-                    <Text style={{marginLeft: 8, fontSize: 22}} category="s1">
-                      {format(item.hora, 'HH:mm:ss')}
+                    <Text
+                      style={{marginLeft: 8, fontSize: 16}}
+                      status="warning"
+                      category="s1">
+                      Nenhum ponto registado hoje.
                     </Text>
                   </View>
-                ))
-              ) : (
-                <View
-                  style={[
-                    styles.flexRow,
-                    {
-                      borderStyle: 'solid',
-                      borderColor: '#dde1eb',
-                      borderBottomWidth: 0,
-                      paddingHorizontal: 0,
-                      paddingVertical: 4,
-                    },
-                  ]}>
-                  <Icon
-                    style={[styles.icon, {width: 24, height: 24}]}
-                    fill="orange"
-                    name="info-outline"
-                  />
-                  <Text
-                    style={{marginLeft: 8, fontSize: 16}}
-                    status="warning"
-                    category="s1">
-                    Nenhum ponto registado hoje.
-                  </Text>
-                </View>
-              )}
-            </Card>
-          </Layout>
-        </ScrollView>
+                )}
+              </Card>
+            </View>
+          </ScrollView>
+        </Layout>
         <TopNavigation
           title={ButtonsFooter}
           alignment="center"
@@ -210,11 +212,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    padding: 10,
     flex: 1,
     flexDirection: 'column',
+    // backgroundColor: 'red',
   },
-  view: {padding: 10, flex: 1},
+  layout: {
+    flex: 1,
+    padding: 10,
+  },
   scroll: {
     flex: 1,
     // backgroundColor: 'green',

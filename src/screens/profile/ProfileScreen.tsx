@@ -1,85 +1,41 @@
-import React from 'react';
+import React, {Component} from 'react';
+import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {Layout, Text} from '@ui-kitten/components';
 import {TopBar} from '../../components/TopBar';
-import {Card, Icon, Layout, Text} from '@ui-kitten/components';
-import {ScrollView, StyleSheet, View} from 'react-native';
 
-const CardHeader = (props: any) => (
-  <View {...props} style={[props.style, styles.cardHeader]}>
-    <View style={[styles.cardHeaderItems, {maxWidth: 40}]}>
-      <Icon style={styles.icon} fill="#36f" name="person-outline" />
-    </View>
-    <View style={[styles.cardHeaderItems, {flex: 2}]}>
-      <Text style={{fontSize: 22}} category="h6">
-        Perfil
-      </Text>
-    </View>
-    {/*<View style={styles.cardHeaderItems}>*/}
-    {/*  <Text*/}
-    {/*    status="success"*/}
-    {/*    style={{*/}
-    {/*      textAlign: 'right',*/}
-    {/*      fontSize: 16,*/}
-    {/*    }}*/}
-    {/*    category="s1">*/}
-    {/*    Sex. 06 de Janeiro*/}
-    {/*  </Text>*/}
-    {/*</View>*/}
-  </View>
-);
-
-class ProfileScreen extends React.Component<any, any> {
+class ProfileScreen extends Component {
   render() {
     return (
-      <Layout style={styles.topContainer} level="2">
-        <TopBar homeScreen={false} />
-        <ScrollView>
-          <View style={styles.view}>
-            <Card
-              header={CardHeader}
-              // footer={CardFooter}
-              style={styles.card}
-            />
-          </View>
-        </ScrollView>
-      </Layout>
+      <SafeAreaView style={styles.safeView}>
+        <TopBar />
+        <Layout level="3" style={styles.layout}>
+          <ScrollView style={styles.scroll}>
+            <View style={styles.container}>
+              <Text>Exemplo</Text>
+            </View>
+          </ScrollView>
+        </Layout>
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  topContainer: {
+  safeView: {
+    flex: 1,
+  },
+  container: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'stretch',
+    // backgroundColor: 'red',
   },
-  view: {
+  layout: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'stretch',
-    paddingHorizontal: 8,
-    paddingTop: 16,
+    padding: 10,
   },
-  card: {
+  scroll: {
     flex: 1,
-    marginBottom: 16,
-  },
-  cardHeader: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardHeaderItems: {
-    justifyContent: 'center',
-    flex: 1,
-    height: 32,
-  },
-  icon: {
-    flex: 1,
-    width: 32,
-    height: 32,
+    // backgroundColor: 'green',
   },
 });
 
