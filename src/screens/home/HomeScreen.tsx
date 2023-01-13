@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {Component} from 'react';
+import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {
   Button,
   Card,
@@ -7,9 +8,41 @@ import {
   Text,
   TopNavigation,
 } from '@ui-kitten/components';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {TopBarHome} from '../../components/TopBarHome';
 import {addHours, format, set} from 'date-fns';
-import {TopBar} from '../../components/TopBar';
+
+const renderEnterIcon = (props: any) => (
+  <Icon {...props} name="log-in-outline" />
+);
+const ButtonsFooter = () => (
+  <View style={styles.footer}>
+    <Text style={{textAlign: 'center', paddingVertical: 4}} category="h2">
+      00:00:00
+    </Text>
+    <Button
+      style={{borderRadius: 0}}
+      accessoryLeft={renderEnterIcon}
+      status="success"
+      size="large">
+      Entrada
+    </Button>
+  </View>
+);
+
+interface Data {
+  tipo: string;
+  hora: Date;
+}
+
+const data: Data[] = new Array(100)
+  .fill({
+    hora: set(new Date(), {hours: 1, minutes: 0, seconds: 0}),
+    tipo: 'entrada',
+  })
+  .map((a: Data, i) => ({
+    hora: addHours(a.hora, i),
+    tipo: i % 2 === 0 ? 'entrada' : 'saida',
+  }));
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -35,43 +68,13 @@ const CardHeader = (props: any) => (
   </View>
 );
 
-const renderEnterIcon = (props: any) => (
-  <Icon {...props} name="log-in-outline" />
-);
-
-const ButtonsFooter = (props: any) => (
-  <View {...props} style={styles.flex}>
-    <Text style={{textAlign: 'center', marginBottom: 8}} category="h2">
-      00:00:00
-    </Text>
-    <Button accessoryLeft={renderEnterIcon} status="success" size="large">
-      Entrada
-    </Button>
-  </View>
-);
-
-interface Data {
-  tipo: string;
-  hora: Date;
-}
-
-const data: Data[] = new Array(4)
-  .fill({
-    hora: set(new Date(), {hours: 1, minutes: 0, seconds: 0}),
-    tipo: 'entrada',
-  })
-  .map((a: Data, i) => ({
-    hora: addHours(a.hora, i),
-    tipo: i % 2 === 0 ? 'entrada' : 'saida',
-  }));
-
-class HomeScreen extends React.Component<any, any> {
+class HomeScreen extends Component {
   render() {
     return (
-      <Layout style={styles.topContainer} level="2">
-        <TopBar homeScreen={true} />
-        <ScrollView>
-          <View style={styles.view}>
+      <SafeAreaView style={styles.safeView}>
+        <TopBarHome />
+        <ScrollView style={styles.scroll}>
+          <Layout level="3" style={styles.container}>
             <Card
               header={CardHeader}
               // footer={CardFooter}
@@ -190,28 +193,53 @@ class HomeScreen extends React.Component<any, any> {
                 </View>
               )}
             </Card>
-          </View>
+          </Layout>
         </ScrollView>
-        <TopNavigation title={ButtonsFooter} style={styles.bottomBar} />
-      </Layout>
+        <TopNavigation
+          title={ButtonsFooter}
+          alignment="center"
+          style={styles.bottomBar}
+        />
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  topContainer: {
+  safeView: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'stretch',
   },
-  view: {
+  container: {
+    padding: 10,
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center',
+  },
+  view: {padding: 10, flex: 1},
+  scroll: {
+    flex: 1,
+    // backgroundColor: 'green',
+  },
+  bottomBar: {
+    flex: 1,
+    maxHeight: 115,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.55,
+    shadowRadius: 5.46,
+    elevation: 9,
+  },
+  footer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    // alignContent: 'space-between',
     alignItems: 'stretch',
-    paddingHorizontal: 8,
-    paddingTop: 16,
+    alignSelf: 'stretch',
+    padding: 0,
+    paddingVertical: 0,
   },
   card: {
     flex: 1,
@@ -238,28 +266,17 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 22,
   },
-  cardHeaderItemText: {},
+  flex: {
+    flex: 1,
+  },
   flexRow: {
     flex: 1,
     flexDirection: 'row',
-  },
-  flex: {
-    flex: 1,
   },
   icon: {
     flex: 1,
     width: 32,
     height: 32,
-  },
-  bottomBar: {
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.55,
-    shadowRadius: 5.46,
-    elevation: 9,
   },
 });
 

@@ -1,15 +1,11 @@
 import React from 'react';
 import {Icon, TopNavigation, TopNavigationAction} from '@ui-kitten/components';
 import {StyleSheet} from 'react-native';
-const TopBar = ({homeScreen}: {homeScreen: boolean}) => {
-  const MenuIcon = (props: any) => <Icon {...props} name="menu-outline" />;
-  const BackIcon = (props: any) => (
-    <Icon {...props} name="arrow-back-outline" />
-  );
-  const ProfileIcon = (props: any) => <Icon {...props} name="person-outline" />;
-  const renderBackAction = () => (
-    <TopNavigationAction icon={homeScreen ? MenuIcon : BackIcon} />
-  );
+
+const BackIcon = (props: any) => <Icon {...props} name="arrow-back-outline" />;
+const ProfileIcon = (props: any) => <Icon {...props} name="person-outline" />;
+const TopBar = (props: any) => {
+  const renderBackAction = () => <TopNavigationAction icon={BackIcon} />;
   const renderProfileAction = () => <TopNavigationAction icon={ProfileIcon} />;
 
   return (
