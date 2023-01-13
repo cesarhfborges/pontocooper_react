@@ -76,9 +76,7 @@ class HomeScreen extends Component {
         <Layout level="3" style={styles.layout}>
           <ScrollView style={styles.scroll}>
             <View style={styles.container}>
-              <Card
-                header={CardHeader}
-                style={styles.card}>
+              <Card header={CardHeader} style={styles.card}>
                 <Text style={styles.title} category="h6">
                   Banco de horas:
                 </Text>

@@ -1,0 +1,37 @@
+{
+  "components": {
+    "Button": {
+      "meta": {},
+      "appearances": {
+        "filled": {
+          "variantGroups": {
+            "status": {
+              "success": {
+                "backgroundColor": "#42d77d",
+                "borderColor": "#34ae87"
+              }
+            }
+          }
+        }
+      }
+    },
+    "TopNavigation": {
+      "meta": {
+        "appearances": {
+          "topMenu": {
+            "default": false
+          }
+        }
+      },
+      "appearances": {
+        "topMenu": {
+          "mapping": {
+            "backgroundColor": "#1da57a",
+            "titleColor": "#FFFFFF",
+            "subtitleColor": "#FFFFFF"
+          }
+        }
+      }
+    }
+  }
+}

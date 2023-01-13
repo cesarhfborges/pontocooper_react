@@ -1,9 +1,19 @@
 import React from 'react';
 import {Icon, TopNavigation, TopNavigationAction} from '@ui-kitten/components';
-import {StyleSheet} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-const MenuIcon = (props: any) => <Icon {...props} name="arrow-back-outline" />;
+const LogoWhite = () => (
+  <View style={styles.logoContainer}>
+    <Image
+      style={styles.logoImg}
+      source={require('./../assets/logo-horizontal-white.png')}
+    />
+  </View>
+);
+const MenuIcon = (props: any) => (
+  <Icon {...props} fill="#FFFFFF" name="arrow-back-outline" />
+);
 const TopBar = () => {
   const navigation = useNavigation();
 
@@ -22,8 +32,8 @@ const TopBar = () => {
   return (
     <TopNavigation
       alignment="center"
-      title="Coopersystem"
-      subtitle="Ponto Eletrônico"
+      title={LogoWhite}
+      appearance="topMenu"
       style={styles.topNav}
       accessoryLeft={renderMenuAction}
     />
@@ -48,6 +58,19 @@ const styles = StyleSheet.create({
     // height: 20,
     // backgroundColor: 'blue',
     // flex: 1,
+  },
+  logoContainer: {
+    // backgroundColor: 'red',
+    // flex: 1,
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    alignSelf: 'center',
+    paddingHorizontal: 8,
+  },
+  logoImg: {
+    flex: 1,
+    resizeMode: 'contain',
+    alignSelf: 'center',
   },
 });
 
