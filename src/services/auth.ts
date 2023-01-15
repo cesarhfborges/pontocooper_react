@@ -1,4 +1,17 @@
-export function signIn() {
+import axios from 'axios';
+
+axios.defaults.timeout = 10000;
+const service = axios.create({
+  headers: {
+    // Authorization: 'Bearer',
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+  },
+});
+
+const baseUrl: string = 'https://api.portal.coopersystem.com.br/api/v1';
+
+function signIn() {
   return new Promise(resolve => {
     setTimeout(() => {
       resolve({
@@ -9,3 +22,9 @@ export function signIn() {
     }, 2000);
   });
 }
+
+function login(data: {username: string; password: string}) {
+  return service.post<any>(`${baseUrl}/auth`, data);
+}
+
+export {signIn, login};

@@ -1,7 +1,7 @@
 import React, {useRef} from 'react';
 import {Card, Input, CheckBox, Button} from '@ui-kitten/components';
 import {Image, ImageBackground, StyleSheet, View, Linking} from 'react-native';
-import {signIn} from '../../services/auth';
+import {signIn, login} from '../../services/auth';
 
 const image = require('./../../assets/wallpaper.jpg');
 const logo = require('./../../assets/logo-horizontal.png');
@@ -25,10 +25,10 @@ const LoginScreen = () => {
   };
 
   const handleSign = async () => {
-    // email, password (formulário omitido)
     console.log('pressed');
-    const response = await signIn();
-    console.log(response);
+    const req: any = {username: 'cesar.borges', password: '@Dj.91344356'};
+    const response = await login(req);
+    console.log(response.data);
     console.log('Success');
   };
 
