@@ -1,6 +1,7 @@
 import React, {useRef} from 'react';
 import {Card, Input, CheckBox, Button} from '@ui-kitten/components';
-import {Image, ImageBackground, StyleSheet, View} from 'react-native';
+import {Image, ImageBackground, StyleSheet, View, Linking} from 'react-native';
+import {signIn} from '../../services/auth';
 
 const image = require('./../../assets/wallpaper.jpg');
 const logo = require('./../../assets/logo-horizontal.png');
@@ -21,6 +22,21 @@ const LoginScreen = () => {
 
   const setFocusToPassword = () => {
     refPass?.current?.focus();
+  };
+
+  const handleSign = async () => {
+    // email, password (formulário omitido)
+    console.log('pressed');
+    const response = await signIn();
+    console.log(response);
+    console.log('Success');
+  };
+
+  const openRecoverPasswd = () => {
+    Linking.openURL('https://sso.coopersystem.com.br/').catch(err => {
+      console.error("Couldn't load page", err);
+      // alert('Failed to open page');
+    });
   };
 
   return (
@@ -57,10 +73,16 @@ const LoginScreen = () => {
             style={styles.checkBox}>
             Lembrar login
           </CheckBox>
-          <Button style={styles.btnSuccess} status="success">
+          <Button
+            onPress={handleSign}
+            style={styles.btnSuccess}
+            status="success">
             Login
           </Button>
-          <Button size="small" status="warning">
+          <Button
+            onPress={openRecoverPasswd}
+            status="warning"
+            appearance="ghost">
             Esqueci minha senha
           </Button>
         </Card>

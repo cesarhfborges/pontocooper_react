@@ -1,19 +1,18 @@
-import React, {useState} from 'react';
+import React, {useContext} from 'react';
 import * as eva from '@eva-design/eva';
+import {Pages} from './screens/Pages';
+import {AuthPages} from './Auth/AuthPages';
 import {ApplicationProvider, IconRegistry} from '@ui-kitten/components';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
-import {AuthPages} from './Auth/AuthPages';
-import {Pages} from './screens/Pages';
-// import {default as mapping} from './mapping.json';
+import AuthContext from './contexts/auth';
 
-export default () => {
-  const [auth, setAuth] = useState<boolean>(false);
-
+export const Routes = () => {
+  const signed = useContext(AuthContext);
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={eva.light} mapping={eva.mapping}>
-        {auth ? <Pages /> : <AuthPages />}
+        {signed ? <Pages /> : <AuthPages />}
       </ApplicationProvider>
     </>
   );
