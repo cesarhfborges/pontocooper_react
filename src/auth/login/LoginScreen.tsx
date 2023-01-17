@@ -10,7 +10,7 @@ import {
 import {Card, Input, Button, Text, Icon, CheckBox} from '@ui-kitten/components';
 import {Formik} from 'formik';
 import * as yup from 'yup';
-import { useAuth } from "../../contexts/Auth";
+import {useAuth} from '../../contexts/Auth';
 
 const image = require('./../../assets/wallpaper.jpg');
 const logo = require('./../../assets/logo-horizontal.png');
@@ -24,7 +24,7 @@ const Header = (props: any) => (
 const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = React.useState(true);
-  const {signIn} = useAuth();
+  const {signIn, handleClick} = useAuth();
   const toggleSecureEntry = () => {
     setSecureTextEntry(!secureTextEntry);
   };
@@ -58,27 +58,14 @@ const LoginScreen = () => {
   });
 
   const submitAction = async (values: any) => {
-    console.log('clickei no login');
-    console.log(values);
-    await signIn(values);
-    // login(values)
-    //   .then(res => {
-    //     console.log('---> RESPOSTA: ', res);
-    //     // signIn(res.access);
-    //     // navigation.navigate('Home');
-    //   })
-    //   .catch(e => {
-    //     console.warn('Dei erro seu porra.....');
-    //     console.log(e);
-    //   });
-    // try {
-    //   const res: any = await login(values);
-    //   console.log('---> RESPOSTA: ', res);
-    //   signIn(res.access);
-    //   // navigation.navigate('Home');
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    setLoading(true);
+    try {
+      await signIn(values);
+    } catch (e) {
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -154,6 +141,7 @@ const LoginScreen = () => {
                 </Button>
                 <Button
                   onPress={() => {
+                    handleClick();
                     // console.log(status);
                     // console.log(userToken);
                   }}

@@ -4,10 +4,13 @@ import {handler} from './handler';
 
 axios.defaults.timeout = enviroment.timeout;
 const service = axios.create({
-  headers: {...enviroment.headers},
+  headers: {
+    ...enviroment.headers,
+    Authorization: 'Bearer',
+  },
 });
 
-async function login(data: {username: string; password: string}) {
+async function user(data: {username: string; password: string}) {
   try {
     const res = await service.post<any>(`${enviroment.baseUrl}/auth`, data);
     return res.data;
@@ -15,5 +18,3 @@ async function login(data: {username: string; password: string}) {
     throw handler(e);
   }
 }
-
-export {login};

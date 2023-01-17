@@ -1,21 +1,25 @@
-import React, {createContext, useState, useContext, useEffect} from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {login} from '../services/authService';
 
 type AuthContextData = {
   token?: string;
-  isLogged: boolean;
   loading: boolean;
   signIn(data: {username: string; password: string}): Promise<void>;
   signOut(): void;
+  isLogged(): boolean;
+  handleClick(): void;
 };
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC<any> = ({children}: any) => {
-  const [token, setToken] = useState<any>();
-  const [isLogged, setLogged] = useState<boolean>(false);
+  const [token, setToken] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleClick = useCallback(() => {
+    console.log('Clicked!');
+  }, []);
 
   useEffect(() => {
     const loadStorageData = async () => {
@@ -26,6 +30,7 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
         }
       } catch (error) {
         console.log(error);
+        setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -48,8 +53,12 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
     await AsyncStorage.removeItem('@Token');
   };
 
+  const isLogged = () => {
+    return !!token;
+  };
+
   return (
-    <AuthContext.Provider value={{token, isLogged, loading, signIn, signOut}}>
+    <AuthContext.Provider value={{token, loading, signIn, signOut, isLogged, handleClick}}>
       {children}
     </AuthContext.Provider>
   );

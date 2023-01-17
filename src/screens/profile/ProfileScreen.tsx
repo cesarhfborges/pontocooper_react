@@ -2,6 +2,7 @@ import React from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {Card, Icon, Layout, Text, Input, Button} from '@ui-kitten/components';
 import {TopBar} from '../../components/TopBar';
+import {useAuth} from '../../contexts/Auth';
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -19,6 +20,7 @@ const CardHeader = (props: any) => (
 const LogoutIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
 
 const ProfileScreen: React.FC = () => {
+  const {signOut} = useAuth();
   return (
     <SafeAreaView style={styles.safeView}>
       <TopBar />
@@ -121,7 +123,7 @@ const ProfileScreen: React.FC = () => {
                 // onChangeText={nextValue => setValue(nextValue)}
               />
               <Button
-                // onPress={signOut}
+                onPress={signOut}
                 style={styles.btnSair}
                 accessoryLeft={LogoutIcon}
                 status="danger">
