@@ -6,7 +6,7 @@ axios.defaults.timeout = enviroment.timeout;
 const service = axios.create({
   headers: {
     ...enviroment.headers,
-    Authorization: 'Bearer',
+    Authorization: `Bearer ${123}`,
   },
 });
 

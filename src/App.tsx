@@ -23,8 +23,6 @@ const Loading: any = () => (
 
 export default () => {
   const {loading, token} = useAuth();
-  console.log('variaveis');
-  console.log(loading, token);
   return (
     <>
       <ToastProvider>
