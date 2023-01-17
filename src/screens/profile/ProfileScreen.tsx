@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {Card, Icon, Layout, Text, Input, Button} from '@ui-kitten/components';
 import {TopBar} from '../../components/TopBar';
+import {useAuth} from '../../contexts/auth';
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -18,120 +19,124 @@ const CardHeader = (props: any) => (
 
 const LogoutIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
 
-class ProfileScreen extends Component {
-  render() {
-    return (
-      <SafeAreaView style={styles.safeView}>
-        <TopBar />
-        <Layout level="3" style={styles.layout}>
-          <ScrollView style={styles.scroll}>
-            <View style={styles.container}>
-              <Card
-                header={CardHeader}
-                // footer={CardFooter}
-                style={styles.card}>
-                {/*<Text>Teste</Text>*/}
-                <Input
-                  label="Nome:"
-                  placeholder="Place your Text"
-                  value="Cesar Henrique Ferreira Borges"
-                  style={styles.input}
-                  // caption={renderCaption}
-                  // accessoryRight={renderIcon}
-                  // secureTextEntry={secureTextEntry}
-                  // onChangeText={nextValue => setValue(nextValue)}
-                />
-                <Input
-                  label="Matricula:"
-                  placeholder="Place your Text"
-                  value="1173"
-                  style={styles.input}
-                  // caption={renderCaption}
-                  // accessoryRight={renderIcon}
-                  // secureTextEntry={secureTextEntry}
-                  // onChangeText={nextValue => setValue(nextValue)}
-                />
-                <Input
-                  label="E-Mail:"
-                  placeholder="Place your Text"
-                  value="cesar.borges@coopersystemc.com.br"
-                  style={styles.input}
-                  // caption={renderCaption}
-                  // accessoryRight={renderIcon}
-                  // secureTextEntry={secureTextEntry}
-                  // onChangeText={nextValue => setValue(nextValue)}
-                />
-                <Input
-                  label="Cargo:"
-                  placeholder="Place your Text"
-                  value="Analista de Sistemas e desenvolvimento III"
-                  style={styles.input}
-                  // caption={renderCaption}
-                  // accessoryRight={renderIcon}
-                  // secureTextEntry={secureTextEntry}
-                  // onChangeText={nextValue => setValue(nextValue)}
-                />
-                <Input
-                  label="Valor/Hora: R$"
-                  placeholder="Place your Text"
-                  value="96,71"
-                  style={styles.input}
-                  // caption={renderCaption}
-                  // accessoryRight={renderIcon}
-                  // secureTextEntry={secureTextEntry}
-                  // onChangeText={nextValue => setValue(nextValue)}
-                />
-                <Input
-                  label="Data de adesão:"
-                  placeholder="Place your Text"
-                  value="01/02/2021"
-                  style={styles.input}
-                  // caption={renderCaption}
-                  // accessoryRight={renderIcon}
-                  // secureTextEntry={secureTextEntry}
-                  // onChangeText={nextValue => setValue(nextValue)}
-                />
-                <Input
-                  label="Data de início:"
-                  placeholder="Place your Text"
-                  value="08/02/2021"
-                  style={styles.input}
-                  // caption={renderCaption}
-                  // accessoryRight={renderIcon}
-                  // secureTextEntry={secureTextEntry}
-                  // onChangeText={nextValue => setValue(nextValue)}
-                />
-                <Input
-                  label="Verba preposto:"
-                  placeholder="Place your Text"
-                  value="Não"
-                  style={styles.input}
-                  // caption={renderCaption}
-                  // accessoryRight={renderIcon}
-                  // secureTextEntry={secureTextEntry}
-                  // onChangeText={nextValue => setValue(nextValue)}
-                />
-                <Input
-                  label="Verba lider:"
-                  placeholder="Place your Text"
-                  value="Não"
-                  style={styles.input}
-                  // caption={renderCaption}
-                  // accessoryRight={renderIcon}
-                  // secureTextEntry={secureTextEntry}
-                  // onChangeText={nextValue => setValue(nextValue)}
-                />
-                <Button style={styles.btnSair} accessoryLeft={LogoutIcon} status="danger">
-                  Sair
-                </Button>
-              </Card>
-            </View>
-          </ScrollView>
-        </Layout>
-      </SafeAreaView>
-    );
-  }
-}
+const ProfileScreen: any = () => {
+  const {status, signOut} = useAuth();
+
+  return (
+    <SafeAreaView style={styles.safeView}>
+      <TopBar />
+      <Layout level="3" style={styles.layout}>
+        <ScrollView style={styles.scroll}>
+          <View style={styles.container}>
+            <Card
+              header={CardHeader}
+              // footer={CardFooter}
+              style={styles.card}>
+              {/*<Text>Teste</Text>*/}
+              <Input
+                label="Nome:"
+                placeholder="Place your Text"
+                value="Cesar Henrique Ferreira Borges"
+                style={styles.input}
+                // caption={renderCaption}
+                // accessoryRight={renderIcon}
+                // secureTextEntry={secureTextEntry}
+                // onChangeText={nextValue => setValue(nextValue)}
+              />
+              <Input
+                label="Matricula:"
+                placeholder="Place your Text"
+                value="1173"
+                style={styles.input}
+                // caption={renderCaption}
+                // accessoryRight={renderIcon}
+                // secureTextEntry={secureTextEntry}
+                // onChangeText={nextValue => setValue(nextValue)}
+              />
+              <Input
+                label="E-Mail:"
+                placeholder="Place your Text"
+                value="cesar.borges@coopersystemc.com.br"
+                style={styles.input}
+                // caption={renderCaption}
+                // accessoryRight={renderIcon}
+                // secureTextEntry={secureTextEntry}
+                // onChangeText={nextValue => setValue(nextValue)}
+              />
+              <Input
+                label="Cargo:"
+                placeholder="Place your Text"
+                value="Analista de Sistemas e desenvolvimento III"
+                style={styles.input}
+                // caption={renderCaption}
+                // accessoryRight={renderIcon}
+                // secureTextEntry={secureTextEntry}
+                // onChangeText={nextValue => setValue(nextValue)}
+              />
+              <Input
+                label="Valor/Hora: R$"
+                placeholder="Place your Text"
+                value="96,71"
+                style={styles.input}
+                // caption={renderCaption}
+                // accessoryRight={renderIcon}
+                // secureTextEntry={secureTextEntry}
+                // onChangeText={nextValue => setValue(nextValue)}
+              />
+              <Input
+                label="Data de adesão:"
+                placeholder="Place your Text"
+                value="01/02/2021"
+                style={styles.input}
+                // caption={renderCaption}
+                // accessoryRight={renderIcon}
+                // secureTextEntry={secureTextEntry}
+                // onChangeText={nextValue => setValue(nextValue)}
+              />
+              <Input
+                label="Data de início:"
+                placeholder="Place your Text"
+                value="08/02/2021"
+                style={styles.input}
+                // caption={renderCaption}
+                // accessoryRight={renderIcon}
+                // secureTextEntry={secureTextEntry}
+                // onChangeText={nextValue => setValue(nextValue)}
+              />
+              <Input
+                label="Verba preposto:"
+                placeholder="Place your Text"
+                value="Não"
+                style={styles.input}
+                // caption={renderCaption}
+                // accessoryRight={renderIcon}
+                // secureTextEntry={secureTextEntry}
+                // onChangeText={nextValue => setValue(nextValue)}
+              />
+              <Input
+                label="Verba lider:"
+                placeholder="Place your Text"
+                value="Não"
+                style={styles.input}
+                // caption={renderCaption}
+                // accessoryRight={renderIcon}
+                // secureTextEntry={secureTextEntry}
+                // onChangeText={nextValue => setValue(nextValue)}
+              />
+              <Button
+                onPress={signOut}
+                style={styles.btnSair}
+                accessoryLeft={LogoutIcon}
+                status="danger">
+                Sair
+              </Button>
+            </Card>
+          </View>
+        </ScrollView>
+      </Layout>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   safeView: {

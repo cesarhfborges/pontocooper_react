@@ -1,20 +1,20 @@
-import React, {useState} from 'react';
-import * as eva from '@eva-design/eva';
+import React from 'react';
 import {ApplicationProvider, IconRegistry} from '@ui-kitten/components';
-import {EvaIconsPack} from '@ui-kitten/eva-icons';
-import {AuthPages} from './Auth/AuthPages';
+import {AuthPages} from './auth/AuthPages';
 import {Pages} from './screens/Pages';
-// import {default as mapping} from './mapping.json';
+import * as eva from '@eva-design/eva';
+import {EvaIconsPack} from '@ui-kitten/eva-icons';
+import {ToastProvider} from 'react-native-toast-notifications';
 
 export default () => {
-  const [auth, setAuth] = useState<boolean>(false);
-
   return (
     <>
-      <IconRegistry icons={EvaIconsPack} />
-      <ApplicationProvider {...eva} theme={eva.light} mapping={eva.mapping}>
-        {auth ? <Pages /> : <AuthPages />}
-      </ApplicationProvider>
+      <ToastProvider>
+        <IconRegistry icons={EvaIconsPack} />
+        <ApplicationProvider {...eva} theme={eva.light} mapping={eva.mapping}>
+          {true ? <Pages /> : <AuthPages />}
+        </ApplicationProvider>
+      </ToastProvider>
     </>
   );
 };

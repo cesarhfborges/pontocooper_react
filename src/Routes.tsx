@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import * as eva from '@eva-design/eva';
 import {Pages} from './screens/Pages';
-import {AuthPages} from './Auth/AuthPages';
+import {AuthPages} from './auth/AuthPages';
 import {ApplicationProvider, IconRegistry} from '@ui-kitten/components';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
 import AuthContext from './contexts/auth';

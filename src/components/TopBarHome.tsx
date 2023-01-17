@@ -5,18 +5,11 @@ import {useNavigation} from '@react-navigation/native';
 
 const LogoWhite = () => (
   <View style={styles.logoContainer}>
-    <Image
-      style={styles.logoImg}
-      source={require('./../assets/logo-horizontal-white.png')}
-    />
+    <Image style={styles.logoImg} source={require('./../assets/logo-horizontal-white.png')} />
   </View>
 );
-const MenuIcon = (props: any) => (
-  <Icon {...props} fill="#FFFFFF" name="menu-outline" />
-);
-const ProfileIcon = (props: any) => (
-  <Icon {...props} fill="#FFFFFF" name="person-outline" />
-);
+const MenuIcon = (props: any) => <Icon {...props} fill="#FFFFFF" name="menu-outline" />;
+const ProfileIcon = (props: any) => <Icon {...props} fill="#FFFFFF" name="person-outline" />;
 const TopBarHome = () => {
   const navigation = useNavigation();
 
@@ -24,9 +17,7 @@ const TopBarHome = () => {
     // @ts-ignore
     navigation.navigate('Profile');
   };
-  const renderMenuAction = () => (
-    <TopNavigationAction style={styles.menuIcon} icon={MenuIcon} />
-  );
+  const renderMenuAction = () => <TopNavigationAction style={styles.menuIcon} icon={MenuIcon} />;
   const renderProfileAction = () => (
     <TopNavigationAction onPress={goToProfile} icon={ProfileIcon} />
   );
