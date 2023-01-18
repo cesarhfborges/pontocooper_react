@@ -1,5 +1,68 @@
 {
   "components": {
+    "Input": {
+      "meta": {
+        "variantGroups": {
+          "status": {
+            "disabledAlt": {
+              "default": false
+            }
+          }
+        }
+      },
+      "appearances": {
+        "default": {
+          "mapping": {
+            "paddingHorizontal": 8,
+            "textMarginHorizontal": 8,
+            "textFontFamily": "text-font-family",
+            "iconWidth": 24,
+            "iconHeight": 24,
+            "iconMarginHorizontal": 8,
+            "labelMarginBottom": 4,
+            "labelFontSize": "text-label-font-size",
+            "labelFontWeight": "text-label-font-weight",
+            "labelFontFamily": "text-label-font-family",
+            "captionFontSize": "text-caption-1-font-size",
+            "captionFontWeight": "text-caption-1-font-weight",
+            "captionFontFamily": "text-caption-1-font-family"
+          },
+          "variantGroups": {
+            "status": {
+              "disabledAlt": {
+                "borderColor": "border-basic-color-4",
+                "backgroundColor": "background-basic-color-2",
+                "textColor": "text-basic-color",
+                "labelColor": "text-hint-color",
+                "captionColor": "text-hint-color",
+                "placeholderColor": "text-hint-color",
+                "iconTintColor": "text-hint-color",
+                "state": {
+                  "focused": {
+                    "borderColor": "color-primary-default",
+                    "backgroundColor": "background-basic-color-1",
+                    "iconTintColor": "text-primary-color"
+                  },
+                  "hover": {
+                    "borderColor": "border-basic-color-4",
+                    "backgroundColor": "background-basic-color-3"
+                  },
+                  "disabled": {
+                    "borderColor": "border-basic-color-4",
+                    "backgroundColor": "background-basic-color-2",
+                    "textColor": "text-basic-color",
+                    "labelColor": "text-hint-color",
+                    "captionColor": "text-hint-color",
+                    "placeholderColor": "text-hint-color",
+                    "iconTintColor": "text-hint-color"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Button": {
       "meta": {},
       "appearances": {

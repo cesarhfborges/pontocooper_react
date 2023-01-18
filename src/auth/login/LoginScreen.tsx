@@ -10,7 +10,7 @@ import {
 import {Card, Input, Button, Text, Icon, CheckBox} from '@ui-kitten/components';
 import {Formik} from 'formik';
 import * as yup from 'yup';
-import {useAuth} from '../../contexts/Auth';
+import {useAuth} from '../../contexts/AuthContext';
 
 const image = require('./../../assets/wallpaper.jpg');
 const logo = require('./../../assets/logo-horizontal.png');
@@ -24,7 +24,7 @@ const Header = (props: any) => (
 const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = React.useState(true);
-  const {signIn, handleClick} = useAuth();
+  const {signIn, token} = useAuth();
   const toggleSecureEntry = () => {
     setSecureTextEntry(!secureTextEntry);
   };
@@ -141,9 +141,7 @@ const LoginScreen = () => {
                 </Button>
                 <Button
                   onPress={() => {
-                    handleClick();
-                    // console.log(status);
-                    // console.log(userToken);
+                    console.log(token);
                   }}
                   style={styles.btnSuccess}
                   disabled={!isValid}

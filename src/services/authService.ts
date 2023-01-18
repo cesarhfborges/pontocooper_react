@@ -7,10 +7,18 @@ const service = axios.create({
   headers: {...enviroment.headers},
 });
 
-async function login(data: {username: string; password: string}) {
+service.interceptors.response.use(
+  response => {
+    return response.data;
+  },
+  error => {
+    console.log(error);
+  },
+);
+
+async function login(data: {username: string; password: string}): Promise<any> {
   try {
-    const res = await service.post<any>(`${enviroment.baseUrl}/auth`, data);
-    return res.data;
+    return await service.post<any>(`${enviroment.baseUrl}/auth`, data);
   } catch (e) {
     throw handler(e);
   }

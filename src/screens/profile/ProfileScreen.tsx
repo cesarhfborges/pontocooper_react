@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {Card, Icon, Layout, Text, Input, Button} from '@ui-kitten/components';
 import {TopBar} from '../../components/TopBar';
-import {useAuth} from '../../contexts/Auth';
+import {useAuth} from '../../contexts/AuthContext';
+import {useAxios} from '../../contexts/AxiosContext';
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -20,7 +21,23 @@ const CardHeader = (props: any) => (
 const LogoutIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
 
 const ProfileScreen: React.FC = () => {
+  const {service} = useAxios();
   const {signOut} = useAuth();
+  // const [profile, setProfile] = useState<Profile>({} as Profile);
+
+  // const getProfile = async () => {
+  //   const response = await service.get('/person/current');
+  //   console.log(response);
+  // };
+
+  useEffect(() => {
+    // const getProfile = async () => {
+    //   const response = await service.get('/person/current');
+    //   console.log(response);
+    // };
+    // getProfile().catch();
+  }, [service]);
+
   return (
     <SafeAreaView style={styles.safeView}>
       <TopBar />
@@ -37,6 +54,8 @@ const ProfileScreen: React.FC = () => {
                 placeholder="Place your Text"
                 value="Cesar Henrique Ferreira Borges"
                 style={styles.input}
+                disabled={true}
+                status="disabledAlt"
                 // caption={renderCaption}
                 // accessoryRight={renderIcon}
                 // secureTextEntry={secureTextEntry}
@@ -47,6 +66,8 @@ const ProfileScreen: React.FC = () => {
                 placeholder="Place your Text"
                 value="1173"
                 style={styles.input}
+                disabled={true}
+                status="disabledAlt"
                 // caption={renderCaption}
                 // accessoryRight={renderIcon}
                 // secureTextEntry={secureTextEntry}
@@ -57,6 +78,8 @@ const ProfileScreen: React.FC = () => {
                 placeholder="Place your Text"
                 value="cesar.borges@coopersystemc.com.br"
                 style={styles.input}
+                disabled={true}
+                status="disabledAlt"
                 // caption={renderCaption}
                 // accessoryRight={renderIcon}
                 // secureTextEntry={secureTextEntry}
@@ -67,6 +90,8 @@ const ProfileScreen: React.FC = () => {
                 placeholder="Place your Text"
                 value="Analista de Sistemas e desenvolvimento III"
                 style={styles.input}
+                disabled={true}
+                status="disabledAlt"
                 // caption={renderCaption}
                 // accessoryRight={renderIcon}
                 // secureTextEntry={secureTextEntry}
@@ -77,6 +102,8 @@ const ProfileScreen: React.FC = () => {
                 placeholder="Place your Text"
                 value="96,71"
                 style={styles.input}
+                disabled={true}
+                status="disabledAlt"
                 // caption={renderCaption}
                 // accessoryRight={renderIcon}
                 // secureTextEntry={secureTextEntry}
@@ -87,6 +114,8 @@ const ProfileScreen: React.FC = () => {
                 placeholder="Place your Text"
                 value="01/02/2021"
                 style={styles.input}
+                disabled={true}
+                status="disabledAlt"
                 // caption={renderCaption}
                 // accessoryRight={renderIcon}
                 // secureTextEntry={secureTextEntry}
@@ -97,6 +126,8 @@ const ProfileScreen: React.FC = () => {
                 placeholder="Place your Text"
                 value="08/02/2021"
                 style={styles.input}
+                disabled={true}
+                status="disabledAlt"
                 // caption={renderCaption}
                 // accessoryRight={renderIcon}
                 // secureTextEntry={secureTextEntry}
@@ -107,6 +138,8 @@ const ProfileScreen: React.FC = () => {
                 placeholder="Place your Text"
                 value="Não"
                 style={styles.input}
+                disabled={true}
+                status="disabledAlt"
                 // caption={renderCaption}
                 // accessoryRight={renderIcon}
                 // secureTextEntry={secureTextEntry}
@@ -117,6 +150,8 @@ const ProfileScreen: React.FC = () => {
                 placeholder="Place your Text"
                 value="Não"
                 style={styles.input}
+                disabled={true}
+                status="disabledAlt"
                 // caption={renderCaption}
                 // accessoryRight={renderIcon}
                 // secureTextEntry={secureTextEntry}

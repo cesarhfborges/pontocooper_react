@@ -1,48 +1,50 @@
-import React, {createContext, useState, useContext, useEffect, useCallback} from 'react';
+import React, {createContext, useState, useContext, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {login} from '../services/authService';
 
 type AuthContextData = {
   token?: string;
+  refresh?: string;
   loading: boolean;
   signIn(data: {username: string; password: string}): Promise<void>;
   signOut(): void;
   isLogged(): boolean;
-  handleClick(): void;
 };
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC<any> = ({children}: any) => {
   const [token, setToken] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  const handleClick = useCallback(() => {
-    console.log('Clicked!');
-  }, []);
+  const [refresh, setRefresh] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const loadStorageData = async () => {
-      try {
-        const _token = await AsyncStorage.getItem('@Token');
-        if (_token) {
-          setToken(_token);
-        }
-      } catch (error) {
-        console.log(error);
+    loadStorageData()
+      .then(() => {
         setLoading(false);
-      } finally {
+      })
+      .catch(() => {
         setLoading(false);
-      }
-    };
-    loadStorageData().catch();
+      });
   }, []);
+
+  const loadStorageData = async () => {
+    const _store = await AsyncStorage.getItem('@Credentials');
+    if (_store) {
+      const {_token, _refresh} = JSON.parse(_store);
+      setToken(_token);
+      setRefresh(_refresh);
+    }
+    return Promise.resolve();
+  };
 
   const signIn = async (data?: {username: string; password: string}): Promise<void> => {
     if (data) {
       const _response = await login(data);
       setToken(_response.access);
-      await AsyncStorage.setItem('@Token', _response.access);
+      setRefresh(_response.refresh);
+      const _store = {_token: _response.access, _refresh: _response.refresh};
+      await AsyncStorage.setItem('@Credentials', JSON.stringify(_store));
     } else {
       throw new Error('Verifique as credenciais');
     }
@@ -50,7 +52,8 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
 
   const signOut = async () => {
     setToken(undefined);
-    await AsyncStorage.removeItem('@Token');
+    setRefresh(undefined);
+    await AsyncStorage.removeItem('@Credentials');
   };
 
   const isLogged = () => {
@@ -58,18 +61,24 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
   };
 
   return (
-    <AuthContext.Provider value={{token, loading, signIn, signOut, isLogged, handleClick}}>
+    <AuthContext.Provider
+      value={{
+        token: token,
+        refresh: refresh,
+        loading: loading,
+        signIn: signIn,
+        signOut: signOut,
+        isLogged: isLogged,
+      }}>
       {children}
     </AuthContext.Provider>
   );
 };
 function useAuth(): AuthContextData {
   const context = useContext(AuthContext);
-
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-
   return context;
 }
 

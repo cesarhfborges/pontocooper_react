@@ -1,29 +1,17 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
-import {
-  Button,
-  Card,
-  Icon,
-  Layout,
-  Text,
-  TopNavigation,
-} from '@ui-kitten/components';
+import {Button, Card, Icon, Layout, Text, TopNavigation} from '@ui-kitten/components';
 import {TopBarHome} from '../../components/TopBarHome';
 import {addHours, format, set} from 'date-fns';
+import {useAxios} from '../../contexts/AxiosContext';
 
-const renderEnterIcon = (props: any) => (
-  <Icon {...props} name="log-in-outline" />
-);
+const renderEnterIcon = (props: any) => <Icon {...props} name="log-in-outline" />;
 const ButtonsFooter = () => (
   <View style={styles.footer}>
     <Text style={{textAlign: 'center', paddingVertical: 4}} category="h2">
       00:00:00
     </Text>
-    <Button
-      style={{borderRadius: 0}}
-      accessoryLeft={renderEnterIcon}
-      status="success"
-      size="large">
+    <Button style={{borderRadius: 0}} accessoryLeft={renderEnterIcon} status="success" size="large">
       Entrada
     </Button>
   </View>
@@ -68,141 +56,148 @@ const CardHeader = (props: any) => (
   </View>
 );
 
-class HomeScreen extends Component {
-  render() {
-    return (
-      <SafeAreaView style={styles.safeView}>
-        <TopBarHome />
-        <Layout level="3" style={styles.layout}>
-          <ScrollView style={styles.scroll}>
-            <View style={styles.container}>
-              <Card header={CardHeader} style={styles.card}>
-                <Text style={styles.title} category="h6">
-                  Banco de horas:
-                </Text>
-                <View style={styles.flexRow}>
-                  <View style={styles.flex}>
-                    <Text style={styles.label} category="label">
-                      Aprovadas:
-                    </Text>
-                    <Text style={styles.text} category="s1">
-                      +35:54h
-                    </Text>
-                  </View>
-                  <View style={styles.flex}>
-                    <Text style={styles.label} category="label">
-                      Em Analise:
-                    </Text>
-                    <Text style={styles.text} category="s1">
-                      +35:54h
-                    </Text>
-                  </View>
+const HomeScreen: React.FC = () => {
+  const {service} = useAxios();
+  const [profile, setProfile] = useState<any>({});
+
+  // const getProfile = async () => {
+  //   const response = await service.get('/person/current');
+  //   console.log(response);
+  // };
+
+  // useEffect(() => {
+  //   getProfile().catch();
+  // }, [getProfile]);
+
+  return (
+    <SafeAreaView style={styles.safeView}>
+      <TopBarHome />
+      <Layout level="3" style={styles.layout}>
+        <ScrollView style={styles.scroll}>
+          <View style={styles.container}>
+            <Card header={CardHeader} style={styles.card}>
+              <Text style={styles.title} category="h6">
+                Banco de horas:
+              </Text>
+              <View style={styles.flexRow}>
+                <View style={styles.flex}>
+                  <Text style={styles.label} category="label">
+                    Aprovadas:
+                  </Text>
+                  <Text style={styles.text} category="s1">
+                    +35:54h
+                  </Text>
                 </View>
-                <View style={styles.flexRow}>
-                  <View style={styles.flex}>
-                    <Text style={styles.label} category="label">
-                      Jornada:
-                    </Text>
-                    <Text style={styles.text} category="s1">
-                      8h
-                    </Text>
-                  </View>
-                  <View style={styles.flex}>
-                    <Text style={styles.label} category="label">
-                      Carga horária:
-                    </Text>
-                    <Text style={styles.text} category="s1">
-                      176h
-                    </Text>
-                  </View>
+                <View style={styles.flex}>
+                  <Text style={styles.label} category="label">
+                    Em Analise:
+                  </Text>
+                  <Text style={styles.text} category="s1">
+                    +35:54h
+                  </Text>
                 </View>
-                <View style={styles.flexRow}>
-                  <View style={styles.flex}>
-                    <Text style={styles.label} category="label">
-                      Dias úteis:
-                    </Text>
-                    <Text style={styles.text} category="s1">
-                      22
-                    </Text>
-                  </View>
-                  <View style={styles.flex}>
-                    <Text style={styles.label} category="label">
-                      Restante:
-                    </Text>
-                    <Text style={styles.text} category="s1">
-                      151h
-                    </Text>
-                  </View>
+              </View>
+              <View style={styles.flexRow}>
+                <View style={styles.flex}>
+                  <Text style={styles.label} category="label">
+                    Jornada:
+                  </Text>
+                  <Text style={styles.text} category="s1">
+                    8h
+                  </Text>
                 </View>
-                <Text style={styles.title} category="h6">
-                  Entradas/Saídas:
-                </Text>
-                {data.length > 0 ? (
-                  data.map((item: any, i: number, items) => (
-                    <View
-                      key={i}
-                      style={[
-                        styles.flexRow,
-                        {
-                          borderStyle: 'solid',
-                          borderColor: '#dde1eb',
-                          borderBottomWidth: i + 1 >= items.length ? 0 : 1,
-                          paddingHorizontal: 0,
-                          paddingVertical: 4,
-                        },
-                      ]}>
-                      <Icon
-                        style={[styles.icon, {width: 34, height: 34}]}
-                        fill={item.tipo === 'entrada' ? 'green' : 'red'}
-                        name={
-                          item.tipo === 'entrada'
-                            ? 'log-in-outline'
-                            : 'log-out-outline'
-                        }
-                      />
-                      <Text style={{marginLeft: 8, fontSize: 22}} category="s1">
-                        {format(item.hora, 'HH:mm:ss')}
-                      </Text>
-                    </View>
-                  ))
-                ) : (
+                <View style={styles.flex}>
+                  <Text style={styles.label} category="label">
+                    Carga horária:
+                  </Text>
+                  <Text style={styles.text} category="s1">
+                    176h
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.flexRow}>
+                <View style={styles.flex}>
+                  <Text style={styles.label} category="label">
+                    Dias úteis:
+                  </Text>
+                  <Text style={styles.text} category="s1">
+                    22
+                  </Text>
+                </View>
+                <View style={styles.flex}>
+                  <Text style={styles.label} category="label">
+                    Restante:
+                  </Text>
+                  <Text style={styles.text} category="s1">
+                    151h
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.title} category="h6">
+                Entradas/Saídas:
+              </Text>
+              {data.length > 0 ? (
+                data.map((item: any, i: number, items) => (
                   <View
+                    key={i}
                     style={[
                       styles.flexRow,
                       {
                         borderStyle: 'solid',
                         borderColor: '#dde1eb',
-                        borderBottomWidth: 0,
+                        borderBottomWidth: i + 1 >= items.length ? 0 : 1,
                         paddingHorizontal: 0,
                         paddingVertical: 4,
                       },
                     ]}>
                     <Icon
-                      style={[styles.icon, {width: 24, height: 24}]}
-                      fill="orange"
-                      name="info-outline"
+                      style={[styles.icon, {width: 34, height: 34}]}
+                      fill={item.tipo === 'entrada' ? 'green' : 'red'}
+                      name={item.tipo === 'entrada' ? 'log-in-outline' : 'log-out-outline'}
                     />
-                    <Text
-                      style={{marginLeft: 8, fontSize: 16}}
-                      status="warning"
-                      category="s1">
-                      Nenhum ponto registado hoje.
+                    <Text style={{marginLeft: 8, fontSize: 22}} category="s1">
+                      {format(item.hora, 'HH:mm:ss')}
                     </Text>
                   </View>
-                )}
-              </Card>
-            </View>
-          </ScrollView>
-        </Layout>
-        <TopNavigation
-          title={ButtonsFooter}
-          alignment="center"
-          style={styles.bottomBar}
-        />
-      </SafeAreaView>
-    );
-  }
-}
+                ))
+              ) : (
+                <View
+                  style={[
+                    styles.flexRow,
+                    {
+                      borderStyle: 'solid',
+                      borderColor: '#dde1eb',
+                      borderBottomWidth: 0,
+                      paddingHorizontal: 0,
+                      paddingVertical: 4,
+                    },
+                  ]}>
+                  <Icon
+                    style={[styles.icon, {width: 24, height: 24}]}
+                    fill="orange"
+                    name="info-outline"
+                  />
+                  <Text style={{marginLeft: 8, fontSize: 16}} status="warning" category="s1">
+                    Nenhum ponto registado hoje.
+                  </Text>
+                </View>
+              )}
+              <Button
+                style={{borderRadius: 0}}
+                // onPress={getProfile}
+                accessoryLeft={renderEnterIcon}
+                status="success"
+                size="large">
+                Entrada
+              </Button>
+            </Card>
+          </View>
+        </ScrollView>
+      </Layout>
+      <TopNavigation title={ButtonsFooter} alignment="center" style={styles.bottomBar} />
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   safeView: {
