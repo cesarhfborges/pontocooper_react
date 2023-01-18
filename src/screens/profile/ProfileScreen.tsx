@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {Card, Icon, Layout, Text, Input, Button} from '@ui-kitten/components';
 import {TopBar} from '../../components/TopBar';
 import {useAuth} from '../../contexts/AuthContext';
 import {useAxios} from '../../contexts/AxiosContext';
+import {Profile} from '../../entities/profile';
+import {useFocusEffect} from '@react-navigation/native';
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -21,22 +23,33 @@ const CardHeader = (props: any) => (
 const LogoutIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
 
 const ProfileScreen: React.FC = () => {
-  const {service} = useAxios();
   const {signOut} = useAuth();
-  // const [profile, setProfile] = useState<Profile>({} as Profile);
+  const {service} = useAxios();
+  const [profile, setProfile] = useState<Profile>({} as Profile);
 
-  // const getProfile = async () => {
-  //   const response = await service.get('/person/current');
-  //   console.log(response);
-  // };
+  useFocusEffect(
+    useCallback(() => {
+      const getProfile = async () => {
+        const response: any = await service.get('/person/current');
+        setProfile(new Profile(response));
+        console.log(response);
+        return Promise.resolve();
+      };
+      getProfile().catch();
+    }, [service]),
+  );
 
-  useEffect(() => {
-    // const getProfile = async () => {
-    //   const response = await service.get('/person/current');
-    //   console.log(response);
-    // };
-    // getProfile().catch();
-  }, [service]);
+  // useEffect(() => {
+  //   // const getProfile = async () => {
+  //   //   const response: any = await service.get('/person/current');
+  //   //   setProfile(response);
+  //   //   console.log(response);
+  //   //   return Promise.resolve();
+  //   // };
+  //   // getProfile().catch();
+  // }, [
+  //   service
+  // ]);
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -52,7 +65,7 @@ const ProfileScreen: React.FC = () => {
               <Input
                 label="Nome:"
                 placeholder="Place your Text"
-                value="Cesar Henrique Ferreira Borges"
+                value={profile?.name_display}
                 style={styles.input}
                 disabled={true}
                 status="disabledAlt"
@@ -64,7 +77,7 @@ const ProfileScreen: React.FC = () => {
               <Input
                 label="Matricula:"
                 placeholder="Place your Text"
-                value="1173"
+                value={profile?.csys_registration_number?.toString()}
                 style={styles.input}
                 disabled={true}
                 status="disabledAlt"
@@ -76,7 +89,7 @@ const ProfileScreen: React.FC = () => {
               <Input
                 label="E-Mail:"
                 placeholder="Place your Text"
-                value="cesar.borges@coopersystemc.com.br"
+                value={profile?.corporate_email}
                 style={styles.input}
                 disabled={true}
                 status="disabledAlt"
@@ -88,7 +101,7 @@ const ProfileScreen: React.FC = () => {
               <Input
                 label="Cargo:"
                 placeholder="Place your Text"
-                value="Analista de Sistemas e desenvolvimento III"
+                value={profile?.position_display?.position_display}
                 style={styles.input}
                 disabled={true}
                 status="disabledAlt"
@@ -100,7 +113,7 @@ const ProfileScreen: React.FC = () => {
               <Input
                 label="Valor/Hora: R$"
                 placeholder="Place your Text"
-                value="96,71"
+                value={profile?.hourly_rate_formated}
                 style={styles.input}
                 disabled={true}
                 status="disabledAlt"
@@ -112,7 +125,7 @@ const ProfileScreen: React.FC = () => {
               <Input
                 label="Data de adesão:"
                 placeholder="Place your Text"
-                value="01/02/2021"
+                value={profile?.affiliation_date_formated}
                 style={styles.input}
                 disabled={true}
                 status="disabledAlt"
@@ -124,7 +137,7 @@ const ProfileScreen: React.FC = () => {
               <Input
                 label="Data de início:"
                 placeholder="Place your Text"
-                value="08/02/2021"
+                value={profile?.start_date_formated}
                 style={styles.input}
                 disabled={true}
                 status="disabledAlt"
@@ -136,7 +149,11 @@ const ProfileScreen: React.FC = () => {
               <Input
                 label="Verba preposto:"
                 placeholder="Place your Text"
-                value="Não"
+                value={
+                  profile?.budgets?.find(i => i.budget_kind === 'verba_preposto')?.has
+                    ? 'Sim'
+                    : 'Não'
+                }
                 style={styles.input}
                 disabled={true}
                 status="disabledAlt"
@@ -148,7 +165,9 @@ const ProfileScreen: React.FC = () => {
               <Input
                 label="Verba lider:"
                 placeholder="Place your Text"
-                value="Não"
+                value={
+                  profile?.budgets?.find(i => i.budget_kind === 'verba_lider')?.has ? 'Sim' : 'Não'
+                }
                 style={styles.input}
                 disabled={true}
                 status="disabledAlt"
