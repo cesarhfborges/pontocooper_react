@@ -1,6 +1,7 @@
 import React, {createContext, useContext} from 'react';
-import axios, {Axios} from 'axios';
-import {useAuth} from './AuthContext';
+import axios, {Axios, AxiosRequestConfig} from 'axios';
+import createAuthRefreshInterceptor, {AxiosAuthRefreshOptions} from 'axios-auth-refresh';
+import {AuthContext, useAuth} from './AuthContext';
 
 type AxiosContextData = {
   service: Axios;
@@ -9,40 +10,20 @@ type AxiosContextData = {
 const AxiosContext = createContext<AxiosContextData>({} as AxiosContextData);
 const {Provider} = AxiosContext;
 
+const defaultHeaders: any = {
+  // Accept: 'application/json',
+  'Content-Type': 'application/json',
+  'X-Requested-With': 'XMLHttpRequest',
+};
+
 const AxiosProvider = ({children}: any) => {
-  const {token, signOut} = useAuth();
+  const authContext = useContext(AuthContext);
+  const {refreshToken} = useContext(AuthContext);
 
   const service = axios.create({
     baseURL: 'https://api.portal.coopersystem.com.br/api/v1',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      Authorization: `Bearer ${token}`,
-    },
+    headers: defaultHeaders,
     timeout: 5000,
-  });
-
-  service.interceptors.request.use(config => {
-    console.log('=======================================================');
-    console.log('=======================================================');
-    console.log('=======================================================');
-    console.log('NEW REQUEST');
-    console.log('date: ', new Date().toString());
-    console.log('headers: ', config.headers);
-    // if (token) {
-    //   const conf: any = {
-    //     ...config,
-    //     headers: {
-    //       Accept: 'application/json',
-    //       'Content-Type': 'application/json',
-    //       'X-Requested-With': 'XMLHttpRequest',
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   };
-    //   return conf as AxiosRequestConfig;
-    // }
-    return config;
   });
 
   service.interceptors.response.use(
@@ -53,11 +34,72 @@ const AxiosProvider = ({children}: any) => {
       // Alert.alert(error);
       console.log('request error: ', error);
       if (error.response.status === 401) {
-        signOut();
+        // signOut();
         return Promise.reject(error);
       }
     },
   );
+
+  service.interceptors.request.use(
+    (config: any) => {
+      console.log('=======================================================');
+      console.log('=======================================================');
+      console.log('=======================================================');
+      console.log('NEW REQUEST');
+      console.log('date: ', new Date().toString());
+      console.log('headers: ', config.headers);
+      if (!config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${authContext.token}`;
+      }
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
+    },
+  );
+
+  const refreshAuthLogic = (failedRequest: any) => {
+    console.log('failedRequest: ', failedRequest);
+    const serviceRefresh = axios.create({
+      baseURL: 'https://api.portal.coopersystem.com.br/api/v1',
+      headers: defaultHeaders,
+      timeout: 5000,
+    });
+    const data: any = {refresh: authContext.refresh};
+    return serviceRefresh.post<any>('/auth/refresh/', data).then(refreshResponse => {
+      refreshToken(refreshResponse.data.access);
+    });
+  };
+
+  const options: AxiosAuthRefreshOptions = {
+    statusCodes: [401],
+    pauseInstanceWhileRefreshing: true,
+    interceptNetworkError: true,
+  };
+
+  createAuthRefreshInterceptor(service, refreshAuthLogic, options);
+
+  // service.interceptors.request.use(config => {
+  //   console.log('=======================================================');
+  //   console.log('=======================================================');
+  //   console.log('=======================================================');
+  //   console.log('NEW REQUEST');
+  //   console.log('date: ', new Date().toString());
+  //   console.log('headers: ', config.headers);
+  //   // if (token) {
+  //   //   const conf: any = {
+  //   //     ...config,
+  //   //     headers: {
+  //   //       Accept: 'application/json',
+  //   //       'Content-Type': 'application/json',
+  //   //       'X-Requested-With': 'XMLHttpRequest',
+  //   //       Authorization: `Bearer ${token}`,
+  //   //     },
+  //   //   };
+  //   //   return conf as AxiosRequestConfig;
+  //   // }
+  //   return config;
+  // });
 
   return <Provider value={{service: service}}>{children}</Provider>;
 };

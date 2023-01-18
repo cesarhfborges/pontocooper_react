@@ -9,6 +9,7 @@ type AuthContextData = {
   signIn(data: {username: string; password: string}): Promise<void>;
   signOut(): void;
   isLogged(): boolean;
+  refreshToken(token: string): void;
 };
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -36,6 +37,14 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
       setRefresh(_refresh);
     }
     return Promise.resolve();
+  };
+
+  const refreshToken = async (newToken: string | null = null) => {
+    if (newToken) {
+      setToken(newToken);
+      const _store = {_token: newToken, _refresh: refresh};
+      await AsyncStorage.setItem('@Credentials', JSON.stringify(_store));
+    }
   };
 
   const signIn = async (data?: {username: string; password: string}): Promise<void> => {
@@ -66,6 +75,7 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
         token: token,
         refresh: refresh,
         loading: loading,
+        refreshToken: refreshToken,
         signIn: signIn,
         signOut: signOut,
         isLogged: isLogged,

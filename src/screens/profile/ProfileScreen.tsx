@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
-import {Card, Icon, Layout, Text, Input, Button} from '@ui-kitten/components';
+import {Card, Icon, Layout, Text, Input, Button, ModalService} from '@ui-kitten/components';
 import {TopBar} from '../../components/TopBar';
 import {useAuth} from '../../contexts/AuthContext';
 import {useAxios} from '../../contexts/AxiosContext';
@@ -26,6 +26,7 @@ const ProfileScreen: React.FC = () => {
   const {signOut} = useAuth();
   const {service} = useAxios();
   const [profile, setProfile] = useState<Profile>({} as Profile);
+  console.log('init axios service: ', service.defaults.headers);
 
   useFocusEffect(
     useCallback(() => {
@@ -50,6 +51,32 @@ const ProfileScreen: React.FC = () => {
   // }, [
   //   service
   // ]);
+
+  let modalID = '';
+
+  const showModal = () => {
+    const contentElement = renderModalContentElement();
+    modalID = ModalService.show(contentElement, {onBackdropPress: hideModal});
+  };
+
+  const hideModal = () => {
+    ModalService.hide(modalID);
+  };
+
+  const renderModalContentElement = () => {
+    return (
+      <Layout
+        style={{
+          // flex: 1,
+          backgroundColor: '#000000',
+          opacity: 0.7,
+          maxWidth: 100,
+          maxHeight: 100,
+        }}>
+        <Text>Hi, I'm modal!</Text>
+      </Layout>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -177,7 +204,8 @@ const ProfileScreen: React.FC = () => {
                 // onChangeText={nextValue => setValue(nextValue)}
               />
               <Button
-                onPress={signOut}
+                // onPress={signOut}
+                onPress={showModal}
                 style={styles.btnSair}
                 accessoryLeft={LogoutIcon}
                 status="danger">

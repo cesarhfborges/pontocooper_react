@@ -19,8 +19,8 @@ const Pages = () => {
       />
       <NavigationContainer>
         <Drawer.Navigator screenOptions={{headerShown: false}} initialRouteName="Home">
-          <Drawer.Screen name="Home" component={HomeScreen} />
-          <Drawer.Screen name="Profile" component={ProfileScreen} />
+          <Drawer.Screen navigationKey="Home" name="Home" component={HomeScreen} />
+          <Drawer.Screen navigationKey="Profile" name="Profile" component={ProfileScreen} />
         </Drawer.Navigator>
       </NavigationContainer>
     </>
