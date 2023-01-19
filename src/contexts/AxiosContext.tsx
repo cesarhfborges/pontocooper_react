@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useRef, useState} from 'react';
+import React, {createContext, useContext, useEffect, useState} from 'react';
 import {useAuth} from './AuthContext';
 import {enviroment} from '../services/enviroment';
 import axios, {Axios} from 'axios';
@@ -9,12 +9,12 @@ type AxiosContextData = {
 };
 
 const defaultHeaders: any = {
-  // Accept: 'application/json',
+  Accept: 'application/json',
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
   origin: 'https://portal.coopersystem.com.br',
   referer: 'https://portal.coopersystem.com.br',
-  Returnerror: 'Yes',
+  Returnerror: 'Yes', // used only with mockoon
 };
 
 const service = axios.create({
@@ -27,7 +27,7 @@ const AxiosContext = createContext<AxiosContextData>({} as AxiosContextData);
 const {Provider} = AxiosContext;
 
 const AxiosProvider = ({children}: any) => {
-  const {token, refreshToken, refresh} = useAuth();
+  const {token, refreshToken, refresh, signOut} = useAuth();
 
   const [sessionToken, setSessionToken] = useState(token);
 
@@ -52,19 +52,6 @@ const AxiosProvider = ({children}: any) => {
     },
   );
 
-  service.interceptors.response.clear();
-  service.interceptors.response.use(
-    response => {
-      return response.data;
-    },
-    error => {
-      if (error.response.status === 401) {
-        // signOut();
-        return Promise.reject(error);
-      }
-    },
-  );
-
   useEffect(() => {
     service.interceptors.request.clear();
     service.interceptors.request.use(
@@ -79,16 +66,21 @@ const AxiosProvider = ({children}: any) => {
   }, [sessionToken, refresh, token]);
 
   const refreshAuthLogic = async () => {
-    const serviceRefresh = axios.create({
-      baseURL: enviroment.baseUrl,
-      headers: defaultHeaders,
-      timeout: 5000,
-    });
-    const data: any = {refresh: refresh};
-    const refreshResponse: any = await serviceRefresh.post<any>('/auth/refresh/', data);
-    await refreshToken(refreshResponse.data.access);
-    setSessionToken(refreshResponse.data.access);
-    return Promise.resolve();
+    try {
+      const serviceRefresh = axios.create({
+        baseURL: enviroment.baseUrl,
+        headers: defaultHeaders,
+        timeout: 5000,
+      });
+      const data: any = {refresh: refresh};
+      const refreshResponse: any = await serviceRefresh.post<any>('/auth/refresh/', data);
+      await refreshToken(refreshResponse.data.access);
+      setSessionToken(refreshResponse.data.access);
+      return Promise.resolve();
+    } catch (e) {
+      signOut();
+      return Promise.reject();
+    }
   };
 
   const options: AxiosAuthRefreshOptions = {
