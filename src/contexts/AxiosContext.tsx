@@ -2,6 +2,7 @@ import React, {createContext, useContext} from 'react';
 import axios, {Axios, AxiosRequestConfig} from 'axios';
 import createAuthRefreshInterceptor, {AxiosAuthRefreshOptions} from 'axios-auth-refresh';
 import {AuthContext, useAuth} from './AuthContext';
+import { Alert } from "react-native";
 
 type AxiosContextData = {
   service: Axios;
@@ -32,6 +33,7 @@ const AxiosProvider = ({children}: any) => {
     },
     error => {
       // Alert.alert(error);
+      Alert.alert('Axios error', JSON.stringify(error));
       console.log('request error: ', error);
       if (error.response.status === 401) {
         // signOut();

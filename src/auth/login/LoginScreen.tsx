@@ -24,7 +24,7 @@ const Header = (props: any) => (
 const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = React.useState(true);
-  const {signIn, token} = useAuth();
+  const {signIn} = useAuth();
   const toggleSecureEntry = () => {
     setSecureTextEntry(!secureTextEntry);
   };
@@ -138,15 +138,6 @@ const LoginScreen = () => {
                   disabled={!isValid}
                   status="success">
                   Login
-                </Button>
-                <Button
-                  onPress={() => {
-                    console.log(token);
-                  }}
-                  style={styles.btnSuccess}
-                  disabled={!isValid}
-                  status="success">
-                  print
                 </Button>
                 <Button onPress={openRecoverPasswd} status="warning" appearance="ghost">
                   Esqueci minha senha

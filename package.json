@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "npx react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "react-devtool": "react-devtools"
   },
   "dependencies": {
     "@eva-design/eva": "^2.1.1",
@@ -22,6 +23,7 @@
     "date-fns": "^2.29.3",
     "formik": "^2.2.9",
     "react": "18.1.0",
+    "react-devtools": "^4.27.1",
     "react-native": "0.70.6",
     "react-native-gesture-handler": "^2.8.0",
     "react-native-keychain": "^8.1.1",
