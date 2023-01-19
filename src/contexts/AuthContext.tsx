@@ -1,4 +1,11 @@
-import React, {createContext, useState, useContext, useEffect} from 'react';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {login} from '../services/authService';
 
@@ -8,26 +15,17 @@ type AuthContextData = {
   loading: boolean;
   signIn(data: {username: string; password: string}): Promise<void>;
   signOut(): void;
+  refreshToken(token: string): Promise<void>;
   isLogged(): boolean;
-  refreshToken(token: string): void;
+  setToken: Dispatch<SetStateAction<string | undefined>>;
 };
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC<any> = ({children}: any) => {
-  const [token, setToken] = useState<any>(null);
+  const [token, setToken] = useState<string | undefined>(undefined);
   const [refresh, setRefresh] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    loadStorageData()
-      .then(() => {
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  }, []);
 
   const loadStorageData = async () => {
     const _store = await AsyncStorage.getItem('@Credentials');
@@ -39,12 +37,21 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
     return Promise.resolve();
   };
 
-  const refreshToken = async (newToken: string | null = null) => {
-    if (newToken) {
-      setToken(newToken);
-      const _store = {_token: newToken, _refresh: refresh};
-      await AsyncStorage.setItem('@Credentials', JSON.stringify(_store));
-    }
+  useEffect(() => {
+    loadStorageData()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const refreshToken = async (auth: string) => {
+    await setToken(auth);
+    const _store = {_token: auth, _refresh: refresh};
+    await AsyncStorage.setItem('@Credentials', JSON.stringify(_store));
+    return Promise.resolve();
   };
 
   const signIn = async (data?: {username: string; password: string}): Promise<void> => {
@@ -72,13 +79,14 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
   return (
     <AuthContext.Provider
       value={{
-        token: token,
-        refresh: refresh,
-        loading: loading,
-        refreshToken: refreshToken,
-        signIn: signIn,
-        signOut: signOut,
-        isLogged: isLogged,
+        token,
+        refresh,
+        loading,
+        refreshToken,
+        setToken,
+        signIn,
+        signOut,
+        isLogged,
       }}>
       {children}
     </AuthContext.Provider>

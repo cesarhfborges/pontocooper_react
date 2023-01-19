@@ -1,58 +1,50 @@
-import React, {createContext, useContext} from 'react';
-import axios, {Axios, AxiosRequestConfig} from 'axios';
+import React, {createContext, useContext, useEffect, useRef, useState} from 'react';
+import {useAuth} from './AuthContext';
+import {enviroment} from '../services/enviroment';
+import axios, {Axios} from 'axios';
 import createAuthRefreshInterceptor, {AxiosAuthRefreshOptions} from 'axios-auth-refresh';
-import {AuthContext, useAuth} from './AuthContext';
-import { Alert } from "react-native";
 
 type AxiosContextData = {
   service: Axios;
 };
 
-const AxiosContext = createContext<AxiosContextData>({} as AxiosContextData);
-const {Provider} = AxiosContext;
-
 const defaultHeaders: any = {
   // Accept: 'application/json',
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
+  origin: 'https://portal.coopersystem.com.br',
+  referer: 'https://portal.coopersystem.com.br',
+  Returnerror: 'Yes',
 };
 
-const AxiosProvider = ({children}: any) => {
-  const authContext = useContext(AuthContext);
-  const {refreshToken} = useContext(AuthContext);
+const service = axios.create({
+  baseURL: enviroment.baseUrl,
+  headers: defaultHeaders,
+  timeout: 5000,
+});
 
-  const service = axios.create({
-    baseURL: 'https://api.portal.coopersystem.com.br/api/v1',
-    headers: defaultHeaders,
-    timeout: 5000,
-  });
+const AxiosContext = createContext<AxiosContextData>({} as AxiosContextData);
+const {Provider} = AxiosContext;
+
+const AxiosProvider = ({children}: any) => {
+  const {token, refreshToken, refresh} = useAuth();
+
+  const [sessionToken, setSessionToken] = useState(token);
 
   service.interceptors.response.use(
     response => {
       return response.data;
     },
     error => {
-      // Alert.alert(error);
-      Alert.alert('Axios error', JSON.stringify(error));
-      console.log('request error: ', error);
       if (error.response.status === 401) {
         // signOut();
         return Promise.reject(error);
       }
     },
   );
-
   service.interceptors.request.use(
-    (config: any) => {
-      console.log('=======================================================');
-      console.log('=======================================================');
-      console.log('=======================================================');
-      console.log('NEW REQUEST');
-      console.log('date: ', new Date().toString());
-      console.log('headers: ', config.headers);
-      if (!config.headers.Authorization) {
-        config.headers.Authorization = `Bearer ${authContext.token}`;
-      }
+    async (config: any) => {
+      config.headers.Authorization = `Bearer ${sessionToken}`;
       return config;
     },
     error => {
@@ -60,48 +52,53 @@ const AxiosProvider = ({children}: any) => {
     },
   );
 
-  const refreshAuthLogic = (failedRequest: any) => {
-    console.log('failedRequest: ', failedRequest);
+  service.interceptors.response.clear();
+  service.interceptors.response.use(
+    response => {
+      return response.data;
+    },
+    error => {
+      if (error.response.status === 401) {
+        // signOut();
+        return Promise.reject(error);
+      }
+    },
+  );
+
+  useEffect(() => {
+    service.interceptors.request.clear();
+    service.interceptors.request.use(
+      async (config: any) => {
+        config.headers.Authorization = `Bearer ${sessionToken}`;
+        return config;
+      },
+      error => {
+        return Promise.reject(error);
+      },
+    );
+  }, [sessionToken, refresh, token]);
+
+  const refreshAuthLogic = async () => {
     const serviceRefresh = axios.create({
-      baseURL: 'https://api.portal.coopersystem.com.br/api/v1',
+      baseURL: enviroment.baseUrl,
       headers: defaultHeaders,
       timeout: 5000,
     });
-    const data: any = {refresh: authContext.refresh};
-    return serviceRefresh.post<any>('/auth/refresh/', data).then(refreshResponse => {
-      refreshToken(refreshResponse.data.access);
-    });
+    const data: any = {refresh: refresh};
+    const refreshResponse: any = await serviceRefresh.post<any>('/auth/refresh/', data);
+    await refreshToken(refreshResponse.data.access);
+    setSessionToken(refreshResponse.data.access);
+    return Promise.resolve();
   };
 
   const options: AxiosAuthRefreshOptions = {
     statusCodes: [401],
     pauseInstanceWhileRefreshing: true,
     interceptNetworkError: true,
+    retryInstance: service,
   };
 
   createAuthRefreshInterceptor(service, refreshAuthLogic, options);
-
-  // service.interceptors.request.use(config => {
-  //   console.log('=======================================================');
-  //   console.log('=======================================================');
-  //   console.log('=======================================================');
-  //   console.log('NEW REQUEST');
-  //   console.log('date: ', new Date().toString());
-  //   console.log('headers: ', config.headers);
-  //   // if (token) {
-  //   //   const conf: any = {
-  //   //     ...config,
-  //   //     headers: {
-  //   //       Accept: 'application/json',
-  //   //       'Content-Type': 'application/json',
-  //   //       'X-Requested-With': 'XMLHttpRequest',
-  //   //       Authorization: `Bearer ${token}`,
-  //   //     },
-  //   //   };
-  //   //   return conf as AxiosRequestConfig;
-  //   // }
-  //   return config;
-  // });
 
   return <Provider value={{service: service}}>{children}</Provider>;
 };

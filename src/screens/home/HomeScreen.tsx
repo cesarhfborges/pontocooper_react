@@ -1,9 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Card, Icon, Layout, Text, TopNavigation} from '@ui-kitten/components';
 import {TopBarHome} from '../../components/TopBarHome';
 import {addHours, format, set} from 'date-fns';
 import {useAxios} from '../../contexts/AxiosContext';
+import {useFocusEffect} from '@react-navigation/native';
+import {Profile} from '../../entities/profile';
+import {Ponto} from '../../entities/ponto';
+import { Batida } from "../../entities/batida";
 
 const renderEnterIcon = (props: any) => <Icon {...props} name="log-in-outline" />;
 const ButtonsFooter = () => (
@@ -59,6 +63,10 @@ const CardHeader = (props: any) => (
 const HomeScreen: React.FC = () => {
   const {service} = useAxios();
   const [profile, setProfile] = useState<any>({});
+
+  useFocusEffect(useCallback(() => {}, []));
+
+  const ponto: Ponto = new Ponto([]);
 
   // const getProfile = async () => {
   //   const response = await service.get('/person/current');
@@ -184,11 +192,24 @@ const HomeScreen: React.FC = () => {
               )}
               <Button
                 style={{borderRadius: 0}}
-                // onPress={getProfile}
+                onPress={() => {
+                  const batida: Batida = {
+                    id: 0,
+                    position: 0,
+                    check_in: true,
+                    check_in_display: '',
+                    latitude: 0,
+                    longitude: 0,
+                    minimum_break: true,
+                    worktime_clock: new Date(),
+                  };
+                  ponto.addPonto(batida);
+                  console.log(ponto.batidas);
+                }}
                 accessoryLeft={renderEnterIcon}
                 status="success"
                 size="large">
-                Entrada
+                Teste de Batida
               </Button>
             </Card>
           </View>

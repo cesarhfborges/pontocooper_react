@@ -23,7 +23,7 @@ const CardHeader = (props: any) => (
 const LogoutIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
 
 const ProfileScreen: React.FC = () => {
-  const {signOut} = useAuth();
+  const {signOut, token} = useAuth();
   const {service} = useAxios();
   const [modalVisible, setModalVisible] = React.useState(false);
   const [profile, setProfile] = useState<Profile>({} as Profile);
@@ -38,7 +38,6 @@ const ProfileScreen: React.FC = () => {
       const getProfile = async () => {
         const response: any = await service.get('/person/current');
         setProfile(new Profile(response));
-        console.log(response);
         return Promise.resolve();
       };
       getProfile().catch();
@@ -190,6 +189,13 @@ const ProfileScreen: React.FC = () => {
                 status="danger">
                 Sair
               </Button>
+              {/*<Button*/}
+              {/*  // onPress={signOut}*/}
+              {/*  onPress={() => getProfile()}*/}
+              {/*  style={styles.btnSair}*/}
+              {/*  status="danger">*/}
+              {/*  Teste*/}
+              {/*</Button>*/}
             </Card>
           </View>
           <Modal
