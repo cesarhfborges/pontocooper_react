@@ -63,7 +63,6 @@ const LoginScreen = () => {
     setLoading(true);
     try {
       await signIn(values);
-      dropDownAlert.alertWithType('success', 'Successo', 'Login efetuado com sucesso.', {}, 3000);
     } catch (e) {
       dropDownAlert.alertWithType(
         'error',

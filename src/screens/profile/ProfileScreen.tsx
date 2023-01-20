@@ -46,18 +46,6 @@ const ProfileScreen: React.FC = () => {
     }, [service]),
   );
 
-  const showToastSuccess = () => {
-    dropDownAlert.alertWithType(
-      'info',
-      'Info',
-      'Start fetch data',
-      (a: any) => {
-        console.log(a);
-      },
-      2000,
-    );
-  };
-
   // useEffect(() => {
   //   // const getProfile = async () => {
   //   //   const response: any = await service.get('/person/current');
@@ -202,13 +190,6 @@ const ProfileScreen: React.FC = () => {
                 accessoryLeft={LogoutIcon}
                 status="danger">
                 Sair
-              </Button>
-              <Button
-                // onPress={signOut}
-                onPress={() => showToastSuccess()}
-                style={styles.btnSair}
-                status="danger">
-                Teste
               </Button>
             </Card>
           </View>
