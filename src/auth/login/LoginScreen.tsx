@@ -117,6 +117,7 @@ const LoginScreen = () => {
                   onBlur={handleBlur('password')}
                   returnKeyType={'done'}
                   returnKeyLabel={'Entrar'}
+                  onSubmitEditing={handleSubmit}
                   value={values.password}
                   accessoryRight={renderIcon}
                   autoCapitalize="none"

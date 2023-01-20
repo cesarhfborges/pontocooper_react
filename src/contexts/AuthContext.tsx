@@ -9,6 +9,11 @@ import React, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {login} from '../services/authService';
 
+interface Storage {
+  _token: string;
+  _refresh: string;
+}
+
 type AuthContextData = {
   token?: string;
   refresh?: string;
@@ -24,51 +29,68 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC<any> = ({children}: any) => {
   const [token, setToken] = useState<string | undefined>(undefined);
-  const [refresh, setRefresh] = useState<any>(null);
+  const [refresh, setRefresh] = useState<any>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const loadStorageData = async () => {
-    const _store = await AsyncStorage.getItem('@Credentials');
-    if (_store) {
-      const {_token, _refresh} = JSON.parse(_store);
-      setToken(_token);
-      setRefresh(_refresh);
+  // const [state, dispatch] = useReducer(reducer, initialState || {});
+
+  const loadStorageData = async (): Promise<void> => {
+    try {
+      const _store: any = await AsyncStorage.getItem('@Credentials');
+      const {_token, _refresh}: Storage = JSON.parse(_store);
+      await setToken(_token);
+      await setRefresh(_refresh);
+      return Promise.resolve();
+    } catch (e) {
+      return Promise.reject();
     }
-    return Promise.resolve();
   };
 
   useEffect(() => {
     loadStorageData()
       .then(() => {
         setLoading(false);
+        // console.log('==================================================================');
+        // console.log('==================================================================');
+        // console.log('==================================================================');
+        // console.log('==================================================================');
+        // console.log('=====> AuthContext effect LOGGED ', format(new Date(), 'HH:mm:ss'));
+        // console.log(token, refresh);
       })
       .catch(() => {
         setLoading(false);
+        // console.log('==================================================================');
+        // console.log('==================================================================');
+        // console.log('==================================================================');
+        // console.log('==================================================================');
+        // console.log('=====> AuthContext effect UNLOGGED ', format(new Date(), 'HH:mm:ss'));
+        // console.log(token, refresh);
       });
   }, []);
 
   const refreshToken = async (auth: string) => {
-    await setToken(auth);
     const _store = {_token: auth, _refresh: refresh};
     await AsyncStorage.setItem('@Credentials', JSON.stringify(_store));
+    await setToken(auth);
     return Promise.resolve();
   };
 
   const signIn = async (data?: {username: string; password: string}): Promise<void> => {
     if (data) {
       const _response = await login(data);
-      setToken(_response.access);
       setRefresh(_response.refresh);
+      setToken(_response.access);
       const _store = {_token: _response.access, _refresh: _response.refresh};
       await AsyncStorage.setItem('@Credentials', JSON.stringify(_store));
+      return Promise.resolve();
     } else {
       throw new Error('Verifique as credenciais');
     }
   };
 
   const signOut = async () => {
-    setToken(undefined);
-    setRefresh(undefined);
+    await setRefresh(undefined);
+    await setToken(undefined);
     await AsyncStorage.removeItem('@Credentials');
   };
 

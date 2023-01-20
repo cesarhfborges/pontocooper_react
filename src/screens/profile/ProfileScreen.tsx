@@ -23,7 +23,7 @@ const CardHeader = (props: any) => (
 const LogoutIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
 
 const ProfileScreen: React.FC = () => {
-  const {signOut, token} = useAuth();
+  const {signOut} = useAuth();
   const {service} = useAxios();
   const [modalVisible, setModalVisible] = React.useState(false);
   const [profile, setProfile] = useState<Profile>({} as Profile);
@@ -41,6 +41,7 @@ const ProfileScreen: React.FC = () => {
         return Promise.resolve();
       };
       getProfile().catch();
+      // signOut();
     }, [service]),
   );
 
