@@ -1,11 +1,12 @@
 import React, {useCallback, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {Card, Icon, Layout, Text, Input, Button, Modal} from '@ui-kitten/components';
+import {Profile} from '../../entities/profile';
 import {TopBar} from '../../components/TopBar';
 import {useAuth} from '../../contexts/AuthContext';
 import {useAxios} from '../../contexts/AxiosContext';
-import {Profile} from '../../entities/profile';
 import {useFocusEffect} from '@react-navigation/native';
+import {useToast} from '../../components/DropDownToast';
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -24,6 +25,7 @@ const LogoutIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
 
 const ProfileScreen: React.FC = () => {
   const {signOut} = useAuth();
+  const {dropDownAlert} = useToast();
   const {service} = useAxios();
   const [modalVisible, setModalVisible] = React.useState(false);
   const [profile, setProfile] = useState<Profile>({} as Profile);
@@ -43,6 +45,18 @@ const ProfileScreen: React.FC = () => {
       getProfile().catch();
     }, [service]),
   );
+
+  const showToastSuccess = () => {
+    dropDownAlert.alertWithType(
+      'info',
+      'Info',
+      'Start fetch data',
+      (a: any) => {
+        console.log(a);
+      },
+      2000,
+    );
+  };
 
   // useEffect(() => {
   //   // const getProfile = async () => {
@@ -189,13 +203,13 @@ const ProfileScreen: React.FC = () => {
                 status="danger">
                 Sair
               </Button>
-              {/*<Button*/}
-              {/*  // onPress={signOut}*/}
-              {/*  onPress={() => getProfile()}*/}
-              {/*  style={styles.btnSair}*/}
-              {/*  status="danger">*/}
-              {/*  Teste*/}
-              {/*</Button>*/}
+              <Button
+                // onPress={signOut}
+                onPress={() => showToastSuccess()}
+                style={styles.btnSair}
+                status="danger">
+                Teste
+              </Button>
             </Card>
           </View>
           <Modal

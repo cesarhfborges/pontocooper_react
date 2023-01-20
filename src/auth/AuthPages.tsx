@@ -10,8 +10,7 @@ const AuthPages = () => {
     <>
       <StatusBar
         animated={true}
-        translucent={true}
-        backgroundColor="#000000"
+        backgroundColor="#1da57a"
         barStyle="default"
         showHideTransition="fade"
         hidden={false}

@@ -11,6 +11,7 @@ import {Card, Input, Button, Text, Icon, CheckBox} from '@ui-kitten/components';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useAuth} from '../../contexts/AuthContext';
+import {useToast} from '../../components/DropDownToast';
 
 const image = require('./../../assets/wallpaper.jpg');
 const logo = require('./../../assets/logo-horizontal.png');
@@ -23,6 +24,7 @@ const Header = (props: any) => (
 
 const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
+  const {dropDownAlert} = useToast();
   const [secureTextEntry, setSecureTextEntry] = React.useState(true);
   const {signIn} = useAuth();
   const toggleSecureEntry = () => {
@@ -61,7 +63,15 @@ const LoginScreen = () => {
     setLoading(true);
     try {
       await signIn(values);
+      dropDownAlert.alertWithType('success', 'Successo', 'Login efetuado com sucesso.', {}, 3000);
     } catch (e) {
+      dropDownAlert.alertWithType(
+        'error',
+        'Ops',
+        'Verifique as credenciais e tente novamente.',
+        undefined,
+        3000,
+      );
       setLoading(false);
     } finally {
       setLoading(false);

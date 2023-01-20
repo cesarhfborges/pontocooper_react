@@ -4,10 +4,10 @@ import {AuthPages} from './auth/AuthPages';
 import {Pages} from './screens/Pages';
 import * as eva from '@eva-design/eva';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
-import {ToastProvider} from 'react-native-toast-notifications';
 import {AuthProvider, useAuth} from './contexts/AuthContext';
 import {AxiosProvider} from './contexts/AxiosContext';
 import {LoadingComponent} from './components/LoadingComponent';
+import {DropDownToast} from './components/DropDownToast';
 
 const Router: any = () => {
   const {token} = useAuth();
@@ -32,12 +32,12 @@ export default () => {
 
   return (
     <>
-      <ToastProvider>
-        <IconRegistry icons={EvaIconsPack} />
-        <ApplicationProvider {...eva} theme={eva.light} mapping={eva.mapping}>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={eva.light} mapping={eva.mapping}>
+        <DropDownToast>
           <AuthProvider>{loadingState ? <LoadingComponent /> : <Router />}</AuthProvider>
-        </ApplicationProvider>
-      </ToastProvider>
+        </DropDownToast>
+      </ApplicationProvider>
     </>
   );
 };
