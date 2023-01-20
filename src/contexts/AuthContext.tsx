@@ -19,7 +19,7 @@ type AuthContextData = {
   refresh?: string;
   loading: boolean;
   signIn(data: {username: string; password: string}): Promise<void>;
-  signOut(): void;
+  signOut(): Promise<void>;
   refreshToken(token: string): Promise<void>;
   isLogged(): boolean;
   setToken: Dispatch<SetStateAction<string | undefined>>;
@@ -31,8 +31,6 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
   const [token, setToken] = useState<string | undefined>(undefined);
   const [refresh, setRefresh] = useState<any>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
-
-  // const [state, dispatch] = useReducer(reducer, initialState || {});
 
   const loadStorageData = async (): Promise<void> => {
     try {
@@ -50,21 +48,9 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
     loadStorageData()
       .then(() => {
         setLoading(false);
-        // console.log('==================================================================');
-        // console.log('==================================================================');
-        // console.log('==================================================================');
-        // console.log('==================================================================');
-        // console.log('=====> AuthContext effect LOGGED ', format(new Date(), 'HH:mm:ss'));
-        // console.log(token, refresh);
       })
       .catch(() => {
         setLoading(false);
-        // console.log('==================================================================');
-        // console.log('==================================================================');
-        // console.log('==================================================================');
-        // console.log('==================================================================');
-        // console.log('=====> AuthContext effect UNLOGGED ', format(new Date(), 'HH:mm:ss'));
-        // console.log(token, refresh);
       });
   }, []);
 
@@ -88,10 +74,11 @@ const AuthProvider: React.FC<any> = ({children}: any) => {
     }
   };
 
-  const signOut = async () => {
+  const signOut = async (): Promise<void> => {
+    await AsyncStorage.removeItem('@Credentials');
     await setRefresh(undefined);
     await setToken(undefined);
-    await AsyncStorage.removeItem('@Credentials');
+    return Promise.resolve();
   };
 
   const isLogged = () => {

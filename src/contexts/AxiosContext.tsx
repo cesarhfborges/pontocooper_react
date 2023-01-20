@@ -3,7 +3,6 @@ import {useAuth} from './AuthContext';
 import {enviroment} from '../services/enviroment';
 import axios, {Axios} from 'axios';
 import createAuthRefreshInterceptor, {AxiosAuthRefreshOptions} from 'axios-auth-refresh';
-import {format} from 'date-fns';
 
 type AxiosContextData = {
   service: Axios;
@@ -31,6 +30,27 @@ const AxiosProvider = ({children}: any) => {
 
   const [sessionToken, setSessionToken] = useState(token);
 
+  service.interceptors.request.use(async (config: any) => {
+    config.headers.Authorization = `Bearer ${sessionToken}`;
+    return config;
+  });
+
+  useEffect(() => {
+    if (!loading) {
+      setSessionToken(token);
+    }
+  }, [loading, token]);
+
+  useEffect(() => {
+    if (typeof sessionToken === 'string') {
+      service.interceptors.request.clear();
+      service.interceptors.request.use(async (config: any) => {
+        config.headers.Authorization = `Bearer ${sessionToken}`;
+        return config;
+      });
+    }
+  }, [sessionToken]);
+
   const refreshAuthLogic = async () => {
     try {
       const serviceRefresh = axios.create({
@@ -45,7 +65,7 @@ const AxiosProvider = ({children}: any) => {
       await refreshToken(refreshResponse.data.access);
       return Promise.resolve();
     } catch (e) {
-      signOut();
+      signOut().catch();
       return Promise.reject();
     }
   };
@@ -53,53 +73,11 @@ const AxiosProvider = ({children}: any) => {
   const options: AxiosAuthRefreshOptions = {
     statusCodes: [401],
     pauseInstanceWhileRefreshing: true,
-    interceptNetworkError: true,
+    // interceptNetworkError: false, usado em ultimo caso para tratar o CORS
     retryInstance: service,
   };
 
   createAuthRefreshInterceptor(service, refreshAuthLogic, options);
-
-  service.interceptors.response.use(
-    response => {
-      return response.data;
-    },
-    error => {
-      if (error.response.status === 401) {
-        return Promise.reject(error);
-      }
-    },
-  );
-
-  service.interceptors.request.use(
-    async (config: any) => {
-      config.headers.Authorization = `Bearer ${token}`;
-      return config;
-    },
-    error => {
-      return Promise.reject(error);
-    },
-  );
-
-  useEffect(() => {
-    if (!loading && token !== sessionToken) {
-      setSessionToken(token);
-      service.interceptors.request.clear();
-      if (token && sessionToken) {
-        service.interceptors.request.use(
-          async (config: any) => {
-            config.headers.Authorization = `Bearer ${sessionToken}`;
-            return config;
-          },
-          error => {
-            return Promise.reject(error);
-          },
-        );
-      }
-    }
-    console.log('==================================================================');
-    console.log('Axios Provider effect: ', format(new Date(), 'HH:mm:ss'));
-    console.log('sessionToken: ', sessionToken);
-  }, [loading, refresh, token, sessionToken, setSessionToken]);
 
   return <Provider value={{service: service}}>{children}</Provider>;
 };

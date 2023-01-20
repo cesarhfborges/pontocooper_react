@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
-import {Card, Icon, Layout, Text, Input, Button, ModalService, Modal} from '@ui-kitten/components';
+import {Card, Icon, Layout, Text, Input, Button, Modal} from '@ui-kitten/components';
 import {TopBar} from '../../components/TopBar';
 import {useAuth} from '../../contexts/AuthContext';
 import {useAxios} from '../../contexts/AxiosContext';
@@ -29,7 +29,7 @@ const ProfileScreen: React.FC = () => {
   const [profile, setProfile] = useState<Profile>({} as Profile);
 
   const logout: any = () => {
-    signOut();
+    signOut().catch();
     setModalVisible(false);
   };
 
@@ -37,11 +37,10 @@ const ProfileScreen: React.FC = () => {
     useCallback(() => {
       const getProfile = async () => {
         const response: any = await service.get('/person/current');
-        setProfile(new Profile(response));
+        setProfile(new Profile(response.data));
         return Promise.resolve();
       };
       getProfile().catch();
-      // signOut();
     }, [service]),
   );
 
