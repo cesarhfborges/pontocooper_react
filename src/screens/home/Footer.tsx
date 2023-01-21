@@ -17,12 +17,15 @@ const Footer: React.FC<any> = (props: any) => {
       </Text>
       <Button
         style={{
-          height: 50,
+          height: 58,
+          alignContent: 'center',
+          alignSelf: 'stretch',
+          alignItems: 'center',
         }}
         accessoryLeft={renderEnterIcon}
         status="success"
         size="giant">
-        Entrada
+        Registrar Entrada
       </Button>
     </View>
   );
