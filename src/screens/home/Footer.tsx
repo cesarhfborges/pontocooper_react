@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button, Icon, Text} from '@ui-kitten/components';
 import {StyleSheet, View} from 'react-native';
+import {Button, Icon, Text} from '@ui-kitten/components';
 
 const Footer: React.FC<any> = (props: any) => {
   const renderEnterIcon = () => <Icon {...props} name="log-in-outline" />;
