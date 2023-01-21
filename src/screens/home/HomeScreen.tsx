@@ -1,13 +1,15 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
-import {Button, Card, Icon, Layout, Text, TopNavigation} from '@ui-kitten/components';
+import {Button, Card, Icon, Layout, Spinner, Text, TopNavigation} from '@ui-kitten/components';
 import {TopBarHome} from '../../components/TopBarHome';
-import {addHours, format, getMonth, getYear, set} from 'date-fns';
+import { addHours, format, getMonth, getYear, parseISO, set } from "date-fns";
 import {useAxios} from '../../contexts/AxiosContext';
 import {useFocusEffect} from '@react-navigation/native';
 import {Profile} from '../../entities/profile';
 import {Ponto} from '../../entities/ponto';
 import {Batida} from '../../entities/batida';
+import {ListaBatidas} from './ListaBatidas';
+import { Footer } from "./Footer";
 
 const renderEnterIcon = (props: any) => <Icon {...props} name="log-in-outline" />;
 const ButtonsFooter = (props: any) => (
@@ -46,7 +48,7 @@ const CardHeader = (props: any) => (
         Produção de hoje
       </Text>
     </View>
-    <View style={[styles.cardHeaderItems, {flex: 2, maxWidth: 90, backgroundColor: 'red'}]}>
+    <View style={[styles.cardHeaderItems, {flex: 2, maxWidth: 90}]}>
       <Text
         status="success"
         style={{
@@ -109,7 +111,16 @@ const HomeScreen: React.FC = () => {
   const getDailyWorktimeClock = async (): Promise<void> => {
     setLoading({...loading, dailyWorktimeClock: true});
     const response = await service.get('/daily_worktime_clock/');
-    setDailyWorktimeClock(response.data);
+    const parse = {
+      had_minimum_break: response.data.had_minimum_break,
+      worked: response.data.worked,
+      working: response.data.working,
+      timeline: response.data.timeline.map((i: any) => ({
+        ...i,
+        worktime_clock: parseISO(i.worktime_clock),
+      })),
+    };
+    setDailyWorktimeClock(parse);
     setLoading({...loading, dailyWorktimeClock: false});
     return Promise.resolve();
   };
@@ -143,7 +154,7 @@ const HomeScreen: React.FC = () => {
                     Aprovadas:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    {`${compensatoryTime?.balance ?? 0}h`}
+                    {!loading.compensatoryTime ? `${compensatoryTime?.balance ?? 0}h` : '...'}
                     {/*+35:54h*/}
                   </Text>
                 </View>
@@ -152,7 +163,7 @@ const HomeScreen: React.FC = () => {
                     Em Analise:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    {`${compensatoryTime?.pending ?? 0}h`}
+                    {!loading.compensatoryTime ? `${compensatoryTime?.pending ?? 0}h` : '...'}
                     {/*+35:54h*/}
                   </Text>
                 </View>
@@ -163,7 +174,7 @@ const HomeScreen: React.FC = () => {
                     Jornada:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    {`${summary?.working_hours ?? 0}h`}
+                    {!loading.summary ? `${summary?.working_hours ?? 0}h` : '...'}
                   </Text>
                 </View>
                 <View style={styles.flex}>
@@ -171,7 +182,7 @@ const HomeScreen: React.FC = () => {
                     Carga horária:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    {`${summary?.hours_to_work ?? 0}h`}
+                    {!loading.summary ? `${summary?.hours_to_work ?? 0}h` : '...'}
                   </Text>
                 </View>
               </View>
@@ -181,7 +192,7 @@ const HomeScreen: React.FC = () => {
                     Dias úteis:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    {`${summary?.business_days ?? 0}h`}
+                    {!loading.summary ? `${summary?.business_days ?? 0}h` : '...'}
                   </Text>
                 </View>
                 <View style={styles.flex}>
@@ -189,42 +200,15 @@ const HomeScreen: React.FC = () => {
                     Restante:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    {`${summary?.remaining_hours ?? 0}h`}
+                    {!loading.summary ? `${summary?.remaining_hours ?? 0}h` : '...'}
                   </Text>
                 </View>
               </View>
-              <Text style={styles.title} category="h6">
+              <Text style={[styles.title, {marginTop: 14}]} category="h6">
                 Entradas/Saídas:
               </Text>
-              {dailyWorktimeClock?.timeline?.length > 0 ? (
-                dailyWorktimeClock?.timeline
-                  ?.sort((a: any, b: any) => {
-                    return a.id > b.id ? 1 : -1;
-                  })
-                  .map((item: any, i: number, items: any) => (
-                    <View
-                      key={i}
-                      style={[
-                        styles.flexRow,
-                        {
-                          borderStyle: 'solid',
-                          borderColor: '#dde1eb',
-                          borderBottomWidth: i + 1 >= items.length ? 0 : 1,
-                          paddingHorizontal: 0,
-                          paddingVertical: 4,
-                        },
-                      ]}>
-                      <Icon
-                        style={[styles.icon, {width: 34, height: 34}]}
-                        fill={item.check_in ? 'green' : 'red'}
-                        name={item.check_in ? 'log-in-outline' : 'log-out-outline'}
-                      />
-                      <Text style={{marginLeft: 8, fontSize: 22}} category="s1">
-                        {/*{format(item.hora, 'HH:mm:ss')}*/}
-                        {item.worktime_clock}
-                      </Text>
-                    </View>
-                  ))
+              {!loading.dailyWorktimeClock ? (
+                <ListaBatidas timeLine={dailyWorktimeClock?.timeline ?? []} />
               ) : (
                 <View
                   style={[
@@ -237,42 +221,17 @@ const HomeScreen: React.FC = () => {
                       paddingVertical: 4,
                     },
                   ]}>
-                  <Icon
-                    style={[styles.icon, {width: 24, height: 24}]}
-                    fill="orange"
-                    name="info-outline"
-                  />
-                  <Text style={{marginLeft: 8, fontSize: 16}} status="warning" category="s1">
-                    Nenhum ponto registado hoje.
+                  <Spinner status="info" />
+                  <Text style={{marginLeft: 8, fontSize: 16}} status="info" category="s1">
+                    Carregando...
                   </Text>
                 </View>
               )}
-              <Button
-                style={{borderRadius: 0}}
-                onPress={() => {
-                  const batida: Batida = {
-                    id: 0,
-                    position: 0,
-                    check_in: true,
-                    check_in_display: '',
-                    latitude: 0,
-                    longitude: 0,
-                    minimum_break: true,
-                    worktime_clock: new Date(),
-                  };
-                  ponto.addPonto(batida);
-                  console.log(ponto.batidas);
-                }}
-                accessoryLeft={renderEnterIcon}
-                status="success"
-                size="large">
-                Teste de Batida
-              </Button>
             </Card>
           </View>
         </ScrollView>
       </Layout>
-      <TopNavigation title={ButtonsFooter} alignment="center" style={styles.bottomBar} />
+      <Footer style={styles.bottomBar} />
     </SafeAreaView>
   );
 };
@@ -288,21 +247,20 @@ const styles = StyleSheet.create({
   layout: {
     flex: 1,
     padding: 10,
+    marginBottom: 110,
   },
   scroll: {
     flex: 1,
   },
   bottomBar: {
-    flex: 1,
-    maxHeight: 115,
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.55,
-    shadowRadius: 5.46,
-    elevation: 9,
+    // shadowColor: '#000000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 4,
+    // },
+    // shadowOpacity: 0.55,
+    // shadowRadius: 5.46,
+    // elevation: 9,
   },
   footer: {
     flex: 1,
