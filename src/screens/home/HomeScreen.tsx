@@ -2,16 +2,16 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Card, Icon, Layout, Text, TopNavigation} from '@ui-kitten/components';
 import {TopBarHome} from '../../components/TopBarHome';
-import {addHours, format, set} from 'date-fns';
+import {addHours, format, getMonth, getYear, set} from 'date-fns';
 import {useAxios} from '../../contexts/AxiosContext';
 import {useFocusEffect} from '@react-navigation/native';
 import {Profile} from '../../entities/profile';
 import {Ponto} from '../../entities/ponto';
-import { Batida } from "../../entities/batida";
+import {Batida} from '../../entities/batida';
 
 const renderEnterIcon = (props: any) => <Icon {...props} name="log-in-outline" />;
-const ButtonsFooter = () => (
-  <View style={styles.footer}>
+const ButtonsFooter = (props: any) => (
+  <View {...props} style={styles.footer}>
     <Text style={{textAlign: 'center', paddingVertical: 4}} category="h2">
       00:00:00
     </Text>
@@ -21,20 +21,20 @@ const ButtonsFooter = () => (
   </View>
 );
 
-interface Data {
-  tipo: string;
-  hora: Date;
-}
-
-const data: Data[] = new Array(4)
-  .fill({
-    hora: set(new Date(), {hours: 1, minutes: 0, seconds: 0}),
-    tipo: 'entrada',
-  })
-  .map((a: Data, i) => ({
-    hora: addHours(a.hora, i),
-    tipo: i % 2 === 0 ? 'entrada' : 'saida',
-  }));
+// interface Data {
+//   tipo: string;
+//   hora: Date;
+// }
+//
+// const data: Data[] = new Array(4)
+//   .fill({
+//     hora: set(new Date(), {hours: 1, minutes: 0, seconds: 0}),
+//     tipo: 'entrada',
+//   })
+//   .map((a: Data, i) => ({
+//     hora: addHours(a.hora, i),
+//     tipo: i % 2 === 0 ? 'entrada' : 'saida',
+//   }));
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -42,19 +42,20 @@ const CardHeader = (props: any) => (
       <Icon style={styles.icon} fill="#36f" name="globe-2-outline" />
     </View>
     <View style={[styles.cardHeaderItems, {flex: 2}]}>
-      <Text style={{fontSize: 22}} category="h6">
+      <Text style={{fontSize: 18}} category="h6">
         Produção de hoje
       </Text>
     </View>
-    <View style={styles.cardHeaderItems}>
+    <View style={[styles.cardHeaderItems, {flex: 2, maxWidth: 90, backgroundColor: 'red'}]}>
       <Text
         status="success"
         style={{
           textAlign: 'right',
           fontSize: 16,
+          fontWeight: 'bold',
         }}
         category="s1">
-        Sex. 06 de Janeiro
+        06/01/22
       </Text>
     </View>
   </View>
@@ -62,20 +63,69 @@ const CardHeader = (props: any) => (
 
 const HomeScreen: React.FC = () => {
   const {service} = useAxios();
-  const [profile, setProfile] = useState<any>({});
-
-  useFocusEffect(useCallback(() => {}, []));
+  const [loading, setLoading] = useState<{
+    compensatoryTime: boolean;
+    summary: boolean;
+    profile: boolean;
+    dailyWorktimeClock: boolean;
+  }>({
+    summary: false,
+    profile: false,
+    compensatoryTime: false,
+    dailyWorktimeClock: false,
+  });
+  const [profile, setProfile] = useState<any>(null);
+  const [summary, setSummary] = useState<any>(null);
+  const [compensatoryTime, setCompensatoryTime] = useState<any>(null);
+  const [dailyWorktimeClock, setDailyWorktimeClock] = useState<any>(null);
 
   const ponto: Ponto = new Ponto([]);
 
-  // const getProfile = async () => {
-  //   const response = await service.get('/person/current');
-  //   console.log(response);
-  // };
+  const getProfile = async (): Promise<void> => {
+    setLoading({...loading, profile: true});
+    const response = await service.get('/person/current');
+    setProfile(response.data);
+    setLoading({...loading, profile: false});
+    return Promise.resolve();
+  };
 
-  // useEffect(() => {
-  //   getProfile().catch();
-  // }, [getProfile]);
+  const getSummary = async (): Promise<void> => {
+    const date = new Date();
+    const year: string = format(date, 'yyyy');
+    const month: string = format(date, 'MM');
+    setLoading({...loading, summary: true});
+    const response = await service.get(`/work_month_summary/${year}/${month}/`);
+    setSummary(response.data);
+    setLoading({...loading, summary: false});
+    return Promise.resolve();
+  };
+  const getCompensatoryTime = async (): Promise<void> => {
+    setLoading({...loading, compensatoryTime: true});
+    const response = await service.get('/my_compensatory_time');
+    setCompensatoryTime(response.data);
+    setLoading({...loading, compensatoryTime: false});
+    return Promise.resolve();
+  };
+  const getDailyWorktimeClock = async (): Promise<void> => {
+    setLoading({...loading, dailyWorktimeClock: true});
+    const response = await service.get('/daily_worktime_clock/');
+    setDailyWorktimeClock(response.data);
+    setLoading({...loading, dailyWorktimeClock: false});
+    return Promise.resolve();
+  };
+
+  useEffect(() => {
+    getProfile().catch();
+    getSummary().catch();
+    getCompensatoryTime().catch();
+    getDailyWorktimeClock().catch();
+  }, []);
+
+  // useFocusEffect(() => {
+  //   Promise.all([getProfile, getSummary]).catch(e => {
+  //     console.info(e);
+  //   });
+  // });
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -93,7 +143,8 @@ const HomeScreen: React.FC = () => {
                     Aprovadas:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    +35:54h
+                    {`${compensatoryTime?.balance ?? 0}h`}
+                    {/*+35:54h*/}
                   </Text>
                 </View>
                 <View style={styles.flex}>
@@ -101,7 +152,8 @@ const HomeScreen: React.FC = () => {
                     Em Analise:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    +35:54h
+                    {`${compensatoryTime?.pending ?? 0}h`}
+                    {/*+35:54h*/}
                   </Text>
                 </View>
               </View>
@@ -111,7 +163,7 @@ const HomeScreen: React.FC = () => {
                     Jornada:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    8h
+                    {`${summary?.working_hours ?? 0}h`}
                   </Text>
                 </View>
                 <View style={styles.flex}>
@@ -119,7 +171,7 @@ const HomeScreen: React.FC = () => {
                     Carga horária:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    176h
+                    {`${summary?.hours_to_work ?? 0}h`}
                   </Text>
                 </View>
               </View>
@@ -129,7 +181,7 @@ const HomeScreen: React.FC = () => {
                     Dias úteis:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    22
+                    {`${summary?.business_days ?? 0}h`}
                   </Text>
                 </View>
                 <View style={styles.flex}>
@@ -137,37 +189,42 @@ const HomeScreen: React.FC = () => {
                     Restante:
                   </Text>
                   <Text style={styles.text} category="s1">
-                    151h
+                    {`${summary?.remaining_hours ?? 0}h`}
                   </Text>
                 </View>
               </View>
               <Text style={styles.title} category="h6">
                 Entradas/Saídas:
               </Text>
-              {data.length > 0 ? (
-                data.map((item: any, i: number, items) => (
-                  <View
-                    key={i}
-                    style={[
-                      styles.flexRow,
-                      {
-                        borderStyle: 'solid',
-                        borderColor: '#dde1eb',
-                        borderBottomWidth: i + 1 >= items.length ? 0 : 1,
-                        paddingHorizontal: 0,
-                        paddingVertical: 4,
-                      },
-                    ]}>
-                    <Icon
-                      style={[styles.icon, {width: 34, height: 34}]}
-                      fill={item.tipo === 'entrada' ? 'green' : 'red'}
-                      name={item.tipo === 'entrada' ? 'log-in-outline' : 'log-out-outline'}
-                    />
-                    <Text style={{marginLeft: 8, fontSize: 22}} category="s1">
-                      {format(item.hora, 'HH:mm:ss')}
-                    </Text>
-                  </View>
-                ))
+              {dailyWorktimeClock?.timeline?.length > 0 ? (
+                dailyWorktimeClock?.timeline
+                  ?.sort((a: any, b: any) => {
+                    return a.id > b.id ? 1 : -1;
+                  })
+                  .map((item: any, i: number, items: any) => (
+                    <View
+                      key={i}
+                      style={[
+                        styles.flexRow,
+                        {
+                          borderStyle: 'solid',
+                          borderColor: '#dde1eb',
+                          borderBottomWidth: i + 1 >= items.length ? 0 : 1,
+                          paddingHorizontal: 0,
+                          paddingVertical: 4,
+                        },
+                      ]}>
+                      <Icon
+                        style={[styles.icon, {width: 34, height: 34}]}
+                        fill={item.check_in ? 'green' : 'red'}
+                        name={item.check_in ? 'log-in-outline' : 'log-out-outline'}
+                      />
+                      <Text style={{marginLeft: 8, fontSize: 22}} category="s1">
+                        {/*{format(item.hora, 'HH:mm:ss')}*/}
+                        {item.worktime_clock}
+                      </Text>
+                    </View>
+                  ))
               ) : (
                 <View
                   style={[
