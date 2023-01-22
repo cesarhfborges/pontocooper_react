@@ -1,42 +1,14 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
-import {Button, Card, Icon, Layout, Spinner, Text, TopNavigation} from '@ui-kitten/components';
+import {Button, Card, Icon, Layout, Spinner, Text} from '@ui-kitten/components';
 import {TopBarHome} from '../../components/TopBarHome';
-import { addHours, format, getMonth, getYear, parseISO, set } from "date-fns";
+import {format, parseISO} from 'date-fns';
 import {useAxios} from '../../contexts/AxiosContext';
-import {useFocusEffect} from '@react-navigation/native';
-import {Profile} from '../../entities/profile';
-import {Ponto} from '../../entities/ponto';
-import {Batida} from '../../entities/batida';
 import {ListaBatidas} from './ListaBatidas';
-import { Footer } from "./Footer";
-
-const renderEnterIcon = (props: any) => <Icon {...props} name="log-in-outline" />;
-const ButtonsFooter = (props: any) => (
-  <View {...props} style={styles.footer}>
-    <Text style={{textAlign: 'center', paddingVertical: 4}} category="h2">
-      00:00:00
-    </Text>
-    <Button style={{borderRadius: 0}} accessoryLeft={renderEnterIcon} status="success" size="large">
-      Entrada
-    </Button>
-  </View>
-);
-
-// interface Data {
-//   tipo: string;
-//   hora: Date;
-// }
-//
-// const data: Data[] = new Array(4)
-//   .fill({
-//     hora: set(new Date(), {hours: 1, minutes: 0, seconds: 0}),
-//     tipo: 'entrada',
-//   })
-//   .map((a: Data, i) => ({
-//     hora: addHours(a.hora, i),
-//     tipo: i % 2 === 0 ? 'entrada' : 'saida',
-//   }));
+import {Footer} from './Footer';
+import {Ponto} from '../../entities/ponto';
+import Geolocation, {GeoPosition} from 'react-native-geolocation-service';
+import { requestLocationPermission } from '../../services/gpsService';
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -76,6 +48,7 @@ const HomeScreen: React.FC = () => {
     compensatoryTime: false,
     dailyWorktimeClock: false,
   });
+  const [location, setLocation] = useState<GeoPosition | undefined>(undefined);
   const [profile, setProfile] = useState<any>(null);
   const [summary, setSummary] = useState<any>(null);
   const [compensatoryTime, setCompensatoryTime] = useState<any>(null);
@@ -123,6 +96,25 @@ const HomeScreen: React.FC = () => {
     setDailyWorktimeClock(parse);
     setLoading({...loading, dailyWorktimeClock: false});
     return Promise.resolve();
+  };
+
+  const getLocation = async () => {
+    const result = await requestLocationPermission();
+    if (result) {
+      Geolocation.getCurrentPosition(
+        position => {
+          console.log(position);
+          setLocation(position);
+        },
+        error => {
+          // See error code charts below.
+          console.log(error.code, error.message);
+          setLocation(undefined);
+        },
+        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      );
+    }
+    console.log(location);
   };
 
   useEffect(() => {
@@ -227,6 +219,9 @@ const HomeScreen: React.FC = () => {
                   </Text>
                 </View>
               )}
+              <Button onPress={getLocation} status="success" size="giant">
+                get GPS
+              </Button>
             </Card>
           </View>
         </ScrollView>
