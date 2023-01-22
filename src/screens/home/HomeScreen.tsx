@@ -6,9 +6,8 @@ import {format, parseISO} from 'date-fns';
 import {useAxios} from '../../contexts/AxiosContext';
 import {ListaBatidas} from './ListaBatidas';
 import {Footer} from './Footer';
-import {Ponto} from '../../entities/ponto';
+import {requestLocationPermission} from '../../services/gpsService';
 import Geolocation, {GeoPosition} from 'react-native-geolocation-service';
-import { requestLocationPermission } from '../../services/gpsService';
 
 const CardHeader = (props: any) => (
   <View {...props} style={[props.style, styles.cardHeader]}>
@@ -53,8 +52,6 @@ const HomeScreen: React.FC = () => {
   const [summary, setSummary] = useState<any>(null);
   const [compensatoryTime, setCompensatoryTime] = useState<any>(null);
   const [dailyWorktimeClock, setDailyWorktimeClock] = useState<any>(null);
-
-  const ponto: Ponto = new Ponto([]);
 
   const getProfile = async (): Promise<void> => {
     setLoading({...loading, profile: true});
