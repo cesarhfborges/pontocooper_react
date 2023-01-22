@@ -42,15 +42,7 @@ const Batida: React.FC<{item: Batida; last: boolean}> = ({item, last}) => {
 };
 
 const ListaBatidas: React.FC<{timeLine: Batida[]}> = ({timeLine}) => {
-  return timeLine?.length > 0 ? (
-    timeLine
-      .sort((a: any, b: any) => {
-        return a.id > b.id ? 1 : -1;
-      })
-      .map((item, index, items) => (
-        <Batida key={index} item={item} last={index + 1 >= items.length} />
-      ))
-  ) : (
+  const NenhumPonto = () => (
     <View
       style={[
         styles.flexRow,
@@ -67,6 +59,22 @@ const ListaBatidas: React.FC<{timeLine: Batida[]}> = ({timeLine}) => {
         Nenhum ponto registado hoje.
       </Text>
     </View>
+  );
+
+  return (
+    <>
+      {timeLine?.length > 0 ? (
+        timeLine
+          .sort((a: any, b: any) => {
+            return a.worktime_clock > b.worktime_clock ? 1 : -1;
+          })
+          .map((item, index, items) => (
+            <Batida key={index} item={item} last={index + 1 >= items.length} />
+          ))
+      ) : (
+        <NenhumPonto />
+      )}
+    </>
   );
 };
 

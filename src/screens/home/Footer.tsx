@@ -1,11 +1,78 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button, Icon, Text} from '@ui-kitten/components';
+import {addSeconds, format, set} from 'date-fns';
+import {useFocusEffect} from '@react-navigation/native';
+import {Batida} from '../../entities/batida';
 
-const Footer: React.FC<any> = (props: any) => {
-  const renderEnterIcon = () => <Icon {...props} name="log-in-outline" />;
+const useInterval = () => {
+  const interval = useRef<any>();
+  useEffect(
+    () => () => {
+      if (interval.current) {
+        clearInterval(interval.current);
+        interval.current = null;
+      }
+    },
+    [],
+  );
+  return interval;
+};
+
+const Footer: React.FC<{batidas?: Batida[]; registerEvent?(): void}> = ({
+  batidas,
+  registerEvent,
+}) => {
+  const [workedTime, setWorkedTime] = useState<Date>(
+    set(new Date(), {hours: 0, minutes: 0, seconds: 0}),
+  );
+  const [working, setWorking] = useState<boolean>(false);
+  const interval = useInterval();
+
+  useEffect(() => {
+    // console.log('After');
+    // console.log(batidas?.length);
+    if (batidas && batidas.length > 0 && batidas.length % 2 === 1) {
+      setWorking(true);
+    } else {
+      setWorking(false);
+    }
+  }, [batidas, batidas?.length]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      interval.current = setInterval(() => {
+        if (batidas) {
+          const workTime = set(new Date(), {
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0,
+          });
+          if (batidas.length > 0) {
+            const diff: Array<number> = batidas.map(e => e.worktime_clock.getTime() / 1000);
+            if (diff.length % 2 === 1) {
+              diff.push(new Date().getTime() / 1000);
+            }
+            const res: number = diff.reduce((a, b) => b - a);
+            setWorkedTime(addSeconds(workTime, res));
+          } else {
+            setWorkedTime(set(new Date(), {hours: 0, minutes: 0, seconds: 0}));
+          }
+        } else {
+          setWorkedTime(set(new Date(), {hours: 0, minutes: 0, seconds: 0}));
+        }
+      }, 1000);
+      return () => {
+        clearInterval(interval.current);
+        setWorkedTime(set(new Date(), {hours: 0, minutes: 0, seconds: 0}));
+      };
+    }, [batidas]),
+  );
+
+  const renderEnterIcon = () => <Icon name="log-in-outline" />;
   return (
-    <View {...props} style={styles.footer}>
+    <View style={styles.footer}>
       <Text
         style={{
           height: 35,
@@ -13,7 +80,8 @@ const Footer: React.FC<any> = (props: any) => {
           textAlignVertical: 'center',
         }}
         category="h4">
-        00:00:00
+        {/*00:00:00*/}
+        {format(workedTime, 'HH:mm:ss')}
       </Text>
       <Button
         style={{
@@ -22,10 +90,11 @@ const Footer: React.FC<any> = (props: any) => {
           alignSelf: 'stretch',
           alignItems: 'center',
         }}
+        onPress={registerEvent}
         accessoryLeft={renderEnterIcon}
-        status="success"
+        status={!working ? 'success' : 'danger'}
         size="giant">
-        Registrar Entrada
+        {!working ? 'Entrada' : 'Saída'}
       </Button>
     </View>
   );

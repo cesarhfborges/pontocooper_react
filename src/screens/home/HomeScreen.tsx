@@ -8,31 +8,7 @@ import {ListaBatidas} from './ListaBatidas';
 import {Footer} from './Footer';
 import {requestLocationPermission} from '../../services/gpsService';
 import Geolocation, {GeoPosition} from 'react-native-geolocation-service';
-
-const CardHeader = (props: any) => (
-  <View {...props} style={[props.style, styles.cardHeader]}>
-    <View style={[styles.cardHeaderItems, {maxWidth: 40}]}>
-      <Icon style={styles.icon} fill="#36f" name="globe-2-outline" />
-    </View>
-    <View style={[styles.cardHeaderItems, {flex: 2}]}>
-      <Text style={{fontSize: 18}} category="h6">
-        Produção de hoje
-      </Text>
-    </View>
-    <View style={[styles.cardHeaderItems, {flex: 2, maxWidth: 90}]}>
-      <Text
-        status="success"
-        style={{
-          textAlign: 'right',
-          fontSize: 16,
-          fontWeight: 'bold',
-        }}
-        category="s1">
-        06/01/22
-      </Text>
-    </View>
-  </View>
-);
+import {Batida} from '../../entities/batida';
 
 const HomeScreen: React.FC = () => {
   const {service} = useAxios();
@@ -121,11 +97,30 @@ const HomeScreen: React.FC = () => {
     getDailyWorktimeClock().catch();
   }, []);
 
-  // useFocusEffect(() => {
-  //   Promise.all([getProfile, getSummary]).catch(e => {
-  //     console.info(e);
-  //   });
-  // });
+  const CardHeader = () => (
+    <View style={styles.cardHeader}>
+      <View style={[styles.cardHeaderItems, {maxWidth: 40}]}>
+        <Icon style={styles.icon} fill="#36f" name="globe-2-outline" />
+      </View>
+      <View style={[styles.cardHeaderItems, {flex: 2}]}>
+        <Text style={{fontSize: 18}} category="h6">
+          Produção de hoje
+        </Text>
+      </View>
+      <View style={[styles.cardHeaderItems, {flex: 2, maxWidth: 90}]}>
+        <Text
+          status="success"
+          style={{
+            textAlign: 'right',
+            fontSize: 16,
+            fontWeight: 'bold',
+          }}
+          category="s1">
+          06/01/22
+        </Text>
+      </View>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -223,7 +218,30 @@ const HomeScreen: React.FC = () => {
           </View>
         </ScrollView>
       </Layout>
-      <Footer style={styles.bottomBar} />
+      <Footer
+        batidas={dailyWorktimeClock?.timeline}
+        registerEvent={() => {
+          const newBatida: Batida = {
+            id: 506321,
+            check_in: false,
+            check_in_display: 'Saída',
+            position: 1,
+            worktime_clock: new Date(), //parseISO('2023-01-23T12:47:31'),
+            latitude: -15.8106912,
+            longitude: -48.030491,
+            minimum_break: false,
+          };
+          console.log('Before');
+          console.log(dailyWorktimeClock.timeline);
+          setDailyWorktimeClock({
+            ...dailyWorktimeClock,
+            timeline: [...dailyWorktimeClock.timeline, newBatida],
+          });
+          // console.log('After');
+          // console.log(dailyWorktimeClock.timeline);
+          console.log('Event by child click');
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -244,16 +262,6 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
   },
-  bottomBar: {
-    // shadowColor: '#000000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 4,
-    // },
-    // shadowOpacity: 0.55,
-    // shadowRadius: 5.46,
-    // elevation: 9,
-  },
   footer: {
     flex: 1,
     flexDirection: 'column',
@@ -272,6 +280,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
   },
   cardHeaderItems: {
     justifyContent: 'center',
