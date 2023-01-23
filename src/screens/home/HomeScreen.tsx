@@ -6,9 +6,9 @@ import {format, parseISO} from 'date-fns';
 import {useAxios} from '../../contexts/AxiosContext';
 import {ListaBatidas} from './ListaBatidas';
 import {Footer} from './Footer';
-import {requestLocationPermission} from '../../services/gpsService';
+import {getLocation, requestLocationPermission} from '../../services/gpsService';
 import Geolocation, {GeoPosition} from 'react-native-geolocation-service';
-import {Batida} from '../../entities/batida';
+import {Batida, Working} from '../../entities/batida';
 
 const HomeScreen: React.FC = () => {
   const {service} = useAxios();
@@ -17,17 +17,19 @@ const HomeScreen: React.FC = () => {
     summary: boolean;
     profile: boolean;
     dailyWorktimeClock: boolean;
+    ponto: boolean;
   }>({
     summary: false,
     profile: false,
     compensatoryTime: false,
     dailyWorktimeClock: false,
+    ponto: false,
   });
-  const [location, setLocation] = useState<GeoPosition | undefined>(undefined);
+  // const [location, setLocation] = useState<GeoPosition | undefined>(undefined);
   const [profile, setProfile] = useState<any>(null);
   const [summary, setSummary] = useState<any>(null);
   const [compensatoryTime, setCompensatoryTime] = useState<any>(null);
-  const [dailyWorktimeClock, setDailyWorktimeClock] = useState<any>(null);
+  const [dailyWorktimeClock, setDailyWorktimeClock] = useState<Working | null>(null);
 
   const getProfile = async (): Promise<void> => {
     setLoading({...loading, profile: true});
@@ -71,23 +73,69 @@ const HomeScreen: React.FC = () => {
     return Promise.resolve();
   };
 
-  const getLocation = async () => {
-    const result = await requestLocationPermission();
-    if (result) {
-      Geolocation.getCurrentPosition(
-        position => {
-          console.log(position);
-          setLocation(position);
-        },
-        error => {
-          // See error code charts below.
-          console.log(error.code, error.message);
-          setLocation(undefined);
-        },
-        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-      );
+  const baterPonto = async (): Promise<void> => {
+    console.log('=============================================================');
+    if (dailyWorktimeClock) {
+      setLoading({...loading, ponto: true});
+      const location: GeoPosition = await getLocation();
+      // console.log('location: ', location);
+      const {latitude, longitude} = location.coords;
+      const data: any = {
+        check_in: !dailyWorktimeClock.working,
+        latitude: latitude,
+        longitude: longitude,
+      };
+      const response = await service.post('/daily_worktime_clock/', data);
+      if (response.data.success) {
+        const newBatida: Batida = {
+          id: 506321,
+          check_in: false,
+          check_in_display: 'Saída',
+          position: 1,
+          worktime_clock: new Date(), //parseISO('2023-01-23T12:47:31'),
+          latitude: -15.8106912,
+          longitude: -48.030491,
+          minimum_break: false,
+        };
+        // console.log('Before');
+        // console.log(dailyWorktimeClock.timeline);
+        await setDailyWorktimeClock({
+          ...dailyWorktimeClock,
+          working: true,
+          timeline: [...dailyWorktimeClock.timeline, newBatida],
+        });
+      }
+      // await getDailyWorktimeClock();
+      setLoading({...loading, ponto: false});
+      return Promise.resolve();
     }
-    console.log(location);
+    return Promise.resolve();
+  };
+
+  const fakeAddPonto = async () => {
+    // console.log('After');
+    // console.log(dailyWorktimeClock.timeline);
+    // console.log('Event by child click');
+    if (dailyWorktimeClock) {
+      const newBatida: Batida = {
+        id: 506321,
+        check_in: false,
+        check_in_display: 'Saída',
+        position: 1,
+        worktime_clock: new Date(), //parseISO('2023-01-23T12:47:31'),
+        latitude: -15.8106912,
+        longitude: -48.030491,
+        minimum_break: false,
+      };
+      // console.log('Before');
+      // console.log(dailyWorktimeClock.timeline);
+      await setDailyWorktimeClock({
+        ...dailyWorktimeClock,
+        working: true,
+        timeline: [...dailyWorktimeClock.timeline, newBatida],
+      });
+      console.log(dailyWorktimeClock, dailyWorktimeClock.timeline.length);
+    }
   };
 
   useEffect(() => {
@@ -211,37 +259,14 @@ const HomeScreen: React.FC = () => {
                   </Text>
                 </View>
               )}
-              <Button onPress={getLocation} status="success" size="giant">
-                get GPS
-              </Button>
+              {/*<Button onPress={baterPonto} status="success" size="giant">*/}
+              {/*  get GPS*/}
+              {/*</Button>*/}
             </Card>
           </View>
         </ScrollView>
       </Layout>
-      <Footer
-        batidas={dailyWorktimeClock?.timeline}
-        registerEvent={() => {
-          const newBatida: Batida = {
-            id: 506321,
-            check_in: false,
-            check_in_display: 'Saída',
-            position: 1,
-            worktime_clock: new Date(), //parseISO('2023-01-23T12:47:31'),
-            latitude: -15.8106912,
-            longitude: -48.030491,
-            minimum_break: false,
-          };
-          console.log('Before');
-          console.log(dailyWorktimeClock.timeline);
-          setDailyWorktimeClock({
-            ...dailyWorktimeClock,
-            timeline: [...dailyWorktimeClock.timeline, newBatida],
-          });
-          // console.log('After');
-          // console.log(dailyWorktimeClock.timeline);
-          console.log('Event by child click');
-        }}
-      />
+      <Footer batidas={dailyWorktimeClock?.timeline} registerEvent={baterPonto} />
     </SafeAreaView>
   );
 };

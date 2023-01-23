@@ -1,16 +1,23 @@
 interface Batida {
+  id: number;
   check_in: boolean;
   check_in_display: string;
-  id: number;
+  position: number;
+  worktime_clock: Date;
   latitude: number;
   longitude: number;
   minimum_break: boolean;
-  position: number;
   rectification?: {
     status: string;
     status_display: string;
   };
-  worktime_clock: Date;
 }
 
-export type {Batida};
+interface Working {
+  had_minimum_break: boolean;
+  timeline: Batida[];
+  worked: string;
+  working: boolean;
+}
+
+export type {Batida, Working};

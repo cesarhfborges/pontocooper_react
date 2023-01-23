@@ -1,21 +1,10 @@
 import React from 'react';
 import {Icon, Text} from '@ui-kitten/components';
 import {StyleSheet, View} from 'react-native';
+import {Batida} from '../../entities/batida';
 import {format} from 'date-fns';
 
-interface Batida {
-  id: number;
-  check_in_display: string;
-  check_in: boolean;
-  position: number;
-  worktime_clock: Date;
-  rectification: any;
-  latitude: number;
-  longitude: number;
-  minimum_break: boolean;
-}
-
-const Batida: React.FC<{item: Batida; last: boolean}> = ({item, last}) => {
+const Ponto: React.FC<{item: Batida; last: boolean}> = ({item, last}) => {
   return (
     <View
       style={[
@@ -35,7 +24,6 @@ const Batida: React.FC<{item: Batida; last: boolean}> = ({item, last}) => {
       />
       <Text style={{marginLeft: 8, fontSize: 22}} category="s1">
         {format(item.worktime_clock, 'HH:mm:ss')}
-        {/*{item.worktime_clock}*/}
       </Text>
     </View>
   );
@@ -69,7 +57,7 @@ const ListaBatidas: React.FC<{timeLine: Batida[]}> = ({timeLine}) => {
             return a.worktime_clock > b.worktime_clock ? 1 : -1;
           })
           .map((item, index, items) => (
-            <Batida key={index} item={item} last={index + 1 >= items.length} />
+            <Ponto key={index} item={item} last={index + 1 >= items.length} />
           ))
       ) : (
         <NenhumPonto />
