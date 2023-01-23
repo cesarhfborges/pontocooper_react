@@ -11,13 +11,21 @@ const LogoWhite = () => (
 const MenuIcon = (props: any) => <Icon {...props} fill="#FFFFFF" name="menu-outline" />;
 const ProfileIcon = (props: any) => <Icon {...props} fill="#FFFFFF" name="person-outline" />;
 const TopBarHome = () => {
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
 
   const goToProfile = () => {
     // @ts-ignore
     navigation.navigate('Profile');
   };
-  const renderMenuAction = () => <TopNavigationAction style={styles.menuIcon} icon={MenuIcon} />;
+  const renderMenuAction = () => (
+    <TopNavigationAction
+      onPress={() => {
+        navigation?.openDrawer();
+      }}
+      style={styles.menuIcon}
+      icon={MenuIcon}
+    />
+  );
   const renderProfileAction = () => (
     <TopNavigationAction onPress={goToProfile} icon={ProfileIcon} />
   );
