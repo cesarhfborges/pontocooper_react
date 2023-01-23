@@ -19,9 +19,13 @@ const useInterval = () => {
   return interval;
 };
 
-const Footer: React.FC<{batidas?: Batida[]; registerEvent?(): void}> = ({
+const renderEnterIcon = (props: any) => <Icon {...props} name="log-in-outline" />;
+const renderExitIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
+
+const Footer: React.FC<{batidas?: Batida[]; registerEvent?(): void; disabled?: boolean}> = ({
   batidas,
   registerEvent,
+  disabled,
 }) => {
   const [workedTime, setWorkedTime] = useState<Date>(
     set(new Date(), {hours: 0, minutes: 0, seconds: 0}),
@@ -70,7 +74,6 @@ const Footer: React.FC<{batidas?: Batida[]; registerEvent?(): void}> = ({
     }, [batidas]),
   );
 
-  const renderEnterIcon = () => <Icon name="log-in-outline" />;
   return (
     <View style={styles.footer}>
       <Text
@@ -80,7 +83,6 @@ const Footer: React.FC<{batidas?: Batida[]; registerEvent?(): void}> = ({
           textAlignVertical: 'center',
         }}
         category="h4">
-        {/*00:00:00*/}
         {format(workedTime, 'HH:mm:ss')}
       </Text>
       <Button
@@ -91,7 +93,8 @@ const Footer: React.FC<{batidas?: Batida[]; registerEvent?(): void}> = ({
           alignItems: 'center',
         }}
         onPress={registerEvent}
-        accessoryLeft={renderEnterIcon}
+        disabled={disabled ?? false}
+        accessoryLeft={!working ? renderEnterIcon : renderExitIcon}
         status={!working ? 'success' : 'danger'}
         size="giant">
         {!working ? 'Entrada' : 'Saída'}

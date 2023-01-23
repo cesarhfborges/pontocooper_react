@@ -44,7 +44,7 @@ const AxiosProvider = ({children}: any) => {
   useEffect(() => {
     if (typeof sessionToken === 'string') {
       service.interceptors.request.clear();
-      service.interceptors.request.use(async (config: any) => {
+      service.interceptors.request.use((config: any) => {
         config.headers.Authorization = `Bearer ${sessionToken}`;
         return config;
       });

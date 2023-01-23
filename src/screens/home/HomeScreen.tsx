@@ -1,17 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
-import {Button, Card, Icon, Layout, Spinner, Text} from '@ui-kitten/components';
+import {Button, Card, Icon, Layout, Modal, Spinner, Text} from '@ui-kitten/components';
 import {TopBarHome} from '../../components/TopBarHome';
 import {format, parseISO} from 'date-fns';
 import {useAxios} from '../../contexts/AxiosContext';
 import {ListaBatidas} from './ListaBatidas';
 import {Footer} from './Footer';
-import {getLocation, requestLocationPermission} from '../../services/gpsService';
-import Geolocation, {GeoPosition} from 'react-native-geolocation-service';
-import {Batida, Working} from '../../entities/batida';
+import {getLocation} from '../../services/gpsService';
+import {GeoPosition} from 'react-native-geolocation-service';
+import {Working} from '../../entities/batida';
+import {useToast} from '../../components/DropDownToast';
 
 const HomeScreen: React.FC = () => {
   const {service} = useAxios();
+  const {dropDownAlert} = useToast();
   const [loading, setLoading] = useState<{
     compensatoryTime: boolean;
     summary: boolean;
@@ -30,6 +32,7 @@ const HomeScreen: React.FC = () => {
   const [summary, setSummary] = useState<any>(null);
   const [compensatoryTime, setCompensatoryTime] = useState<any>(null);
   const [dailyWorktimeClock, setDailyWorktimeClock] = useState<Working | null>(null);
+  const [modalPonto, setModalPonto] = React.useState<boolean>(false);
 
   const getProfile = async (): Promise<void> => {
     setLoading({...loading, profile: true});
@@ -78,64 +81,27 @@ const HomeScreen: React.FC = () => {
     if (dailyWorktimeClock) {
       setLoading({...loading, ponto: true});
       const location: GeoPosition = await getLocation();
-      // console.log('location: ', location);
       const {latitude, longitude} = location.coords;
       const data: any = {
         check_in: !dailyWorktimeClock.working,
         latitude: latitude,
         longitude: longitude,
       };
-      const response = await service.post('/daily_worktime_clock/', data);
-      if (response.data.success) {
-        const newBatida: Batida = {
-          id: 506321,
-          check_in: false,
-          check_in_display: 'Saída',
-          position: 1,
-          worktime_clock: new Date(), //parseISO('2023-01-23T12:47:31'),
-          latitude: -15.8106912,
-          longitude: -48.030491,
-          minimum_break: false,
-        };
-        // console.log('Before');
-        // console.log(dailyWorktimeClock.timeline);
-        await setDailyWorktimeClock({
-          ...dailyWorktimeClock,
-          working: true,
-          timeline: [...dailyWorktimeClock.timeline, newBatida],
-        });
+      const res = await service.post('/daily_worktime_clock/', data);
+      if (res.status === 201) {
+        dropDownAlert.alertWithType('success', 'Beleza', 'Seu ponto foi registrado com sucesso.');
+      } else {
+        dropDownAlert.alertWithType(
+          'error',
+          'Ops',
+          'Parece que algo não foi bem, tente novamente mais tarde.',
+        );
       }
-      // await getDailyWorktimeClock();
+      await getDailyWorktimeClock();
       setLoading({...loading, ponto: false});
       return Promise.resolve();
     }
     return Promise.resolve();
-  };
-
-  const fakeAddPonto = async () => {
-    // console.log('After');
-    // console.log(dailyWorktimeClock.timeline);
-    // console.log('Event by child click');
-    if (dailyWorktimeClock) {
-      const newBatida: Batida = {
-        id: 506321,
-        check_in: false,
-        check_in_display: 'Saída',
-        position: 1,
-        worktime_clock: new Date(), //parseISO('2023-01-23T12:47:31'),
-        latitude: -15.8106912,
-        longitude: -48.030491,
-        minimum_break: false,
-      };
-      // console.log('Before');
-      // console.log(dailyWorktimeClock.timeline);
-      await setDailyWorktimeClock({
-        ...dailyWorktimeClock,
-        working: true,
-        timeline: [...dailyWorktimeClock.timeline, newBatida],
-      });
-      console.log(dailyWorktimeClock, dailyWorktimeClock.timeline.length);
-    }
   };
 
   useEffect(() => {
@@ -259,14 +225,47 @@ const HomeScreen: React.FC = () => {
                   </Text>
                 </View>
               )}
-              {/*<Button onPress={baterPonto} status="success" size="giant">*/}
-              {/*  get GPS*/}
-              {/*</Button>*/}
             </Card>
+            <Modal
+              visible={modalPonto}
+              backdropStyle={{
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              }}
+              onBackdropPress={() => setModalPonto(false)}>
+              <Card disabled={true}>
+                <Text style={{marginBottom: 24}} category="h5">
+                  Deseja realmente registrar o ponto ?
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignContent: 'space-between',
+                  }}>
+                  <Button status="info" onPress={() => setModalPonto(false)}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    status="success"
+                    onPress={() => {
+                      setModalPonto(false);
+                      baterPonto().catch();
+                    }}>
+                    Sim, registrar
+                  </Button>
+                </View>
+              </Card>
+            </Modal>
           </View>
         </ScrollView>
       </Layout>
-      <Footer batidas={dailyWorktimeClock?.timeline} registerEvent={baterPonto} />
+      <Footer
+        disabled={loading.ponto || loading.dailyWorktimeClock}
+        batidas={dailyWorktimeClock?.timeline}
+        registerEvent={() => {
+          setModalPonto(true);
+        }}
+      />
     </SafeAreaView>
   );
 };

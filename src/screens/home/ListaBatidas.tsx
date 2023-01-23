@@ -23,7 +23,7 @@ const Ponto: React.FC<{item: Batida; last: boolean}> = ({item, last}) => {
         name={item.check_in ? 'log-in-outline' : 'log-out-outline'}
       />
       <Text style={{marginLeft: 8, fontSize: 22}} category="s1">
-        {format(item.worktime_clock, 'HH:mm:ss')}
+        {format(item.worktime_clock, 'HH:mm')} - {item.position}&ordf; {item.check_in ? 'Entrada' : 'Saída'}
       </Text>
     </View>
   );
