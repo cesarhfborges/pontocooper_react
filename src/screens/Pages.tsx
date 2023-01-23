@@ -5,6 +5,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import {HomeScreen} from './home/HomeScreen';
 import {ProfileScreen} from './profile/ProfileScreen';
 import {Icon} from '@ui-kitten/components';
+import {HistoricoScreen} from './historico/HistoricoScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -47,6 +48,16 @@ const Pages = () => {
             }}
             name="Profile"
             component={ProfileScreen}
+          />
+          <Drawer.Screen
+            options={{
+              drawerLabel: 'Historico',
+              drawerIcon: ({focused, size}) => (
+                <DrawerIcon name="person-outline" focused={focused} />
+              ),
+            }}
+            name="Historico"
+            component={HistoricoScreen}
           />
         </Drawer.Navigator>
       </NavigationContainer>
