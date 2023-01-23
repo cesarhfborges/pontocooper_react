@@ -111,6 +111,8 @@ const HomeScreen: React.FC = () => {
       await getCompensatoryTime();
       await getDailyWorktimeClock();
     })();
+
+    return () => {};
   }, []);
 
   const CardHeader = () => (
@@ -262,7 +264,9 @@ const HomeScreen: React.FC = () => {
         </ScrollView>
       </Layout>
       <Footer
-        disabled={loading.ponto || loading.dailyWorktimeClock}
+        disabled={
+          loading.ponto || loading.dailyWorktimeClock || loading.summary || loading.compensatoryTime
+        }
         batidas={dailyWorktimeClock?.timeline}
         registerEvent={() => {
           setModalPonto(true);
