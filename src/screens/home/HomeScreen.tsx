@@ -105,10 +105,12 @@ const HomeScreen: React.FC = () => {
   };
 
   useEffect(() => {
-    getProfile().catch();
-    getSummary().catch();
-    getCompensatoryTime().catch();
-    getDailyWorktimeClock().catch();
+    (async () => {
+      await getProfile();
+      await getSummary();
+      await getCompensatoryTime();
+      await getDailyWorktimeClock();
+    })();
   }, []);
 
   const CardHeader = () => (
