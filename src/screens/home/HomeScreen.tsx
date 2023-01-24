@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {RefreshControl, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Card, Icon, Layout, Modal, Spinner, Text} from '@ui-kitten/components';
 import {TopBarHome} from '../../components/TopBarHome';
 import {format, parseISO} from 'date-fns';
@@ -20,12 +20,14 @@ const HomeScreen: React.FC = () => {
     profile: boolean;
     dailyWorktimeClock: boolean;
     ponto: boolean;
+    refresher: boolean;
   }>({
     summary: false,
     profile: false,
     compensatoryTime: false,
     dailyWorktimeClock: false,
     ponto: false,
+    refresher: false,
   });
   // const [location, setLocation] = useState<GeoPosition | undefined>(undefined);
   const [profile, setProfile] = useState<any>(null);
@@ -115,6 +117,13 @@ const HomeScreen: React.FC = () => {
     return () => {};
   }, []);
 
+  const onRefresh = React.useCallback(() => {
+    setLoading({...loading, refresher: true});
+    setTimeout(() => {
+      setLoading({...loading, refresher: false});
+    }, 2000);
+  }, []);
+
   const CardHeader = () => (
     <View style={styles.cardHeader}>
       <View style={[styles.cardHeaderItems, {maxWidth: 40}]}>
@@ -144,7 +153,17 @@ const HomeScreen: React.FC = () => {
     <SafeAreaView style={styles.safeView}>
       <TopBarHome />
       <Layout level="3" style={styles.layout}>
-        <ScrollView style={styles.scroll}>
+        <ScrollView
+          style={styles.scroll}
+          refreshControl={
+            <RefreshControl
+              progressViewOffset={30}
+              progressBackgroundColor="#edf1f7"
+              colors={['#1da57a']}
+              refreshing={loading.refresher}
+              onRefresh={onRefresh}
+            />
+          }>
           <View style={styles.container}>
             <Card header={CardHeader} style={styles.card}>
               <Text style={styles.title} category="h6">
@@ -157,7 +176,6 @@ const HomeScreen: React.FC = () => {
                   </Text>
                   <Text style={styles.text} category="s1">
                     {!loading.compensatoryTime ? `${compensatoryTime?.balance ?? 0}h` : '...'}
-                    {/*+35:54h*/}
                   </Text>
                 </View>
                 <View style={styles.flex}>
@@ -166,7 +184,6 @@ const HomeScreen: React.FC = () => {
                   </Text>
                   <Text style={styles.text} category="s1">
                     {!loading.compensatoryTime ? `${compensatoryTime?.pending ?? 0}h` : '...'}
-                    {/*+35:54h*/}
                   </Text>
                 </View>
               </View>
@@ -267,6 +284,7 @@ const HomeScreen: React.FC = () => {
         disabled={
           loading.ponto || loading.dailyWorktimeClock || loading.summary || loading.compensatoryTime
         }
+        loading={loading.ponto || loading.dailyWorktimeClock || loading.summary}
         batidas={dailyWorktimeClock?.timeline}
         registerEvent={() => {
           setModalPonto(true);
@@ -287,7 +305,7 @@ const styles = StyleSheet.create({
   layout: {
     flex: 1,
     padding: 10,
-    marginBottom: 110,
+    marginBottom: 123,
   },
   scroll: {
     flex: 1,

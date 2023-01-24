@@ -22,11 +22,12 @@ const useInterval = () => {
 const renderEnterIcon = (props: any) => <Icon {...props} name="log-in-outline" />;
 const renderExitIcon = (props: any) => <Icon {...props} name="log-out-outline" />;
 
-const Footer: React.FC<{batidas?: Batida[]; registerEvent?(): void; disabled?: boolean}> = ({
-  batidas,
-  registerEvent,
-  disabled,
-}) => {
+const Footer: React.FC<{
+  batidas?: Batida[];
+  disabled?: boolean;
+  loading?: boolean;
+  registerEvent?(): void;
+}> = ({batidas, registerEvent, disabled}) => {
   const [workedTime, setWorkedTime] = useState<Date>(
     set(new Date(), {hours: 0, minutes: 0, seconds: 0}),
   );

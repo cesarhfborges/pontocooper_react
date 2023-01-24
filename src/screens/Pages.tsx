@@ -41,6 +41,16 @@ const Pages = () => {
           />
           <Drawer.Screen
             options={{
+              drawerLabel: 'Historico',
+              drawerIcon: ({focused, size}) => (
+                <DrawerIcon name="navigation-2-outline" focused={focused} />
+              ),
+            }}
+            name="Historico"
+            component={HistoricoScreen}
+          />
+          <Drawer.Screen
+            options={{
               drawerLabel: 'Perfil',
               drawerIcon: ({focused, size}) => (
                 <DrawerIcon name="person-outline" focused={focused} />
@@ -48,16 +58,6 @@ const Pages = () => {
             }}
             name="Profile"
             component={ProfileScreen}
-          />
-          <Drawer.Screen
-            options={{
-              drawerLabel: 'Historico',
-              drawerIcon: ({focused, size}) => (
-                <DrawerIcon name="person-outline" focused={focused} />
-              ),
-            }}
-            name="Historico"
-            component={HistoricoScreen}
           />
         </Drawer.Navigator>
       </NavigationContainer>
