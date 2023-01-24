@@ -6,6 +6,9 @@ import {HomeScreen} from './home/HomeScreen';
 import {ProfileScreen} from './profile/ProfileScreen';
 import {Icon} from '@ui-kitten/components';
 import {HistoricoScreen} from './historico/HistoricoScreen';
+import { ProducaoScreen } from "./producao/ProducaoScreen";
+import { FeriasAbonosScreen } from "./ferias_abonos/FeriasAbonosScreen";
+import { OpcoesScreen } from "./opcoes/OpcoesScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -41,13 +44,33 @@ const Pages = () => {
           />
           <Drawer.Screen
             options={{
-              drawerLabel: 'Historico',
+              drawerLabel: 'Produção',
+              drawerIcon: ({focused, size}) => (
+                <DrawerIcon name="calendar-outline" focused={focused} />
+              ),
+            }}
+            name="Producao"
+            component={ProducaoScreen}
+          />
+          <Drawer.Screen
+            options={{
+              drawerLabel: 'Historico (GPS)',
               drawerIcon: ({focused, size}) => (
                 <DrawerIcon name="navigation-2-outline" focused={focused} />
               ),
             }}
             name="Historico"
             component={HistoricoScreen}
+          />
+          <Drawer.Screen
+            options={{
+              drawerLabel: 'Férias e Abonos',
+              drawerIcon: ({focused, size}) => (
+                <DrawerIcon name="person-done-outline" focused={focused} />
+              ),
+            }}
+            name="FeriasAbonos"
+            component={FeriasAbonosScreen}
           />
           <Drawer.Screen
             options={{
@@ -58,6 +81,16 @@ const Pages = () => {
             }}
             name="Profile"
             component={ProfileScreen}
+          />
+          <Drawer.Screen
+            options={{
+              drawerLabel: 'Opções',
+              drawerIcon: ({focused, size}) => (
+                <DrawerIcon name="settings-2-outline" focused={focused} />
+              ),
+            }}
+            name="Opcoes"
+            component={OpcoesScreen}
           />
         </Drawer.Navigator>
       </NavigationContainer>
