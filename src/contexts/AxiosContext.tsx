@@ -73,7 +73,7 @@ const AxiosProvider = ({children}: any) => {
   const options: AxiosAuthRefreshOptions = {
     statusCodes: [401],
     pauseInstanceWhileRefreshing: true,
-    // interceptNetworkError: false, usado em ultimo caso para tratar o CORS
+    interceptNetworkError: false, // usado em ultimo caso para tratar o CORS
     retryInstance: service,
   };
 

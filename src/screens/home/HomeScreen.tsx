@@ -11,7 +11,7 @@ import {GeoPosition} from 'react-native-geolocation-service';
 import {Working} from '../../entities/batida';
 import {useToast} from '../../components/DropDownToast';
 
-const HomeScreen: React.FC = () => {
+const HomeScreen: React.FC<any> = ({navigation}) => {
   const {service} = useAxios();
   const {dropDownAlert} = useToast();
   const [loading, setLoading] = useState<{
@@ -107,15 +107,36 @@ const HomeScreen: React.FC = () => {
   };
 
   useEffect(() => {
-    (async () => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      setLoading({
+        ...loading,
+        summary: true,
+        dailyWorktimeClock: true,
+        profile: true,
+        compensatoryTime: true,
+      });
       await getProfile();
       await getSummary();
       await getCompensatoryTime();
       await getDailyWorktimeClock();
-    })();
+    });
+    return unsubscribe;
+    // (async () => {
+    //   await getProducao();
+    // })();
 
-    return () => {};
-  }, []);
+    // return () => {};
+  }, [navigation]);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     await getProfile();
+  //     await getSummary();
+  //     await getCompensatoryTime();
+  //     await getDailyWorktimeClock();
+  //   })();
+  //   return () => {};
+  // }, []);
 
   const onRefresh = React.useCallback(() => {
     setLoading({...loading, refresher: true});
